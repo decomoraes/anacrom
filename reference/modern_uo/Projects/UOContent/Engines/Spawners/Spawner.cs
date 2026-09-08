@@ -1,0 +1,70 @@
+using System;
+using ModernUO.Serialization;
+
+namespace Server.Engines.Spawners;
+
+[SerializationGenerator(1)]
+public partial class Spawner : BaseSpawner
+{
+    /// <summary>
+    /// When true, enables proactive spiral scanning to find valid spawn positions.
+    /// Only relevant when SpawnPositionMode is Automatic or Enabled.
+    /// </summary>
+    private bool ShouldSerializeUseSpiralScan() => _useSpiralScan;
+
+    [SerializableField(0)]
+    [SaveFlag(nameof(ShouldSerializeUseSpiralScan))]
+    [SerializedCommandProperty(AccessLevel.Developer)]
+    private bool _useSpiralScan;
+
+    private bool ShouldSerializeSpawnBounds() => _spawnBounds != default;
+
+    [SerializableProperty(1)]
+    [SaveFlag(nameof(ShouldSerializeSpawnBounds))]
+    [CommandProperty(AccessLevel.Developer)]
+    public override Rectangle3D SpawnBounds
+    {
+        get => _spawnBounds;
+        set
+        {
+            _spawnBounds = value;
+            InvalidateProperties();
+            this.MarkDirty();
+        }
+    }
+
+    [Constructible(AccessLevel.Developer)]
+    public Spawner()
+    {
+    }
+
+    [Constructible(AccessLevel.Developer)]
+    public Spawner(string spawnedName) : base(spawnedName)
+    {
+    }
+
+    [Constructible(AccessLevel.Developer)]
+    public Spawner(
+        int amount,
+        TimeSpan minDelay,
+        TimeSpan maxDelay,
+        int team = 0,
+        Rectangle3D spawnBounds = default,
+        params ReadOnlySpan<string> spawnedNames
+    ) : base(amount, minDelay, maxDelay, team, spawnBounds, spawnedNames)
+    {
+    }
+
+    public override Region Region => Region.Find(Location, Map);
+
+    protected override bool SupportsSpiralScan => _useSpiralScan;
+
+    protected override Rectangle3D GetBoundsForSpawnAttempt() => SpawnBounds;
+
+    protected override ReadOnlySpan<Rectangle3D> GetAllSpawnBounds() => new(ref _spawnBounds);
+
+    private void MigrateFrom(V0Content content)
+    {
+        // V0 had no fields in Spawner, new v1 field _useSpiralScan defaults to false
+    }
+}

@@ -1,0 +1,181 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.config/dotnet-tools.json'
+      - 'Projects/**'
+      - 'Directory.Build.props'
+      - 'global.json'
+      - 'version.json'
+      - '*.slnx'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.config/dotnet-tools.json'
+      - 'Projects/**'
+      - 'Directory.Build.props'
+      - 'global.json'
+      - 'version.json'
+      - '*.slnx'
+
+jobs:
+  build-macos:
+    runs-on: ${{ matrix.os }}
+    # A hung run otherwise bills the full 360-minute default before GitHub kills it.
+    timeout-minutes: 30
+    name: Build (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            name: MacOS 15
+          - os: macos-26
+            name: MacOS 26
+
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+    - name: Install .NET
+      uses: actions/setup-dotnet@v6
+      with:
+        global-json-file: global.json
+    - name: Install Prerequisites
+      run: |
+        brew update
+        brew install icu4c libdeflate argon2
+    - name: Set Library Path
+      run: echo "DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH" >> $GITHUB_ENV
+    - name: Build
+      run: dotnet run --project Projects/BuildTool -- --config Release --skip-prereqs
+    - name: Migration Changes
+      run: git diff --exit-code ./**/Migrations/*.v*.json
+    - name: Test
+      # blame-hang kills a stuck test host after 10 minutes and reports the in-flight
+      # tests plus a process dump instead of hanging until the job timeout.
+      run: |
+        dotnet test --logger trx --results-directory ./TestResults --blame-hang --blame-hang-timeout 10m --blame-hang-dump-type full
+        if [ -z "$(find ./TestResults -name '*.trx' 2>/dev/null)" ]; then
+          echo "::error::No test result files were produced - no test projects ran. Failing to avoid masking failures."
+          exit 1
+        fi
+    - name: Upload test results on failure
+      if: failure()
+      uses: actions/upload-artifact@v7
+      with:
+        name: TestResults-${{ matrix.name }}
+        path: ./TestResults
+        if-no-files-found: ignore
+
+  build-linux:
+    runs-on: ubuntu-latest
+    # A hung run otherwise bills the full 360-minute default before GitHub kills it.
+    timeout-minutes: 30
+    container:
+      image: ${{ matrix.container }}
+      options: --security-opt seccomp=unconfined
+    name: Build (${{ matrix.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - container: ubuntu:26.04
+            name: Ubuntu 26
+            packageManager: apt
+          - container: ubuntu:noble
+            name: Ubuntu 24
+            packageManager: apt
+          - container: ubuntu:jammy
+            name: Ubuntu 22
+            packageManager: apt
+          - container: debian:trixie
+            name: Debian 13
+            packageManager: apt
+          - container: debian:bookworm
+            name: Debian 12
+            packageManager: apt
+          - container: fedora:44
+            name: Fedora 44
+            packageManager: dnf
+          - container: quay.io/centos/centos:stream9
+            name: CentOS 9 Stream
+            packageManager: dnf
+            epel: true
+          - container: quay.io/centos/centos:stream10
+            name: CentOS 10 Stream
+            packageManager: dnf
+            epel: true
+          - container: almalinux:10
+            name: AlmaLinux 10
+            packageManager: dnf
+            epel: true
+
+    steps:
+      # Enable CRB before EPEL, per the EPEL quickstart. epel-next is not installed:
+      # none of the prerequisites need it, EPEL 10 does not have it, and it is one more
+      # mirrorlist to fetch.
+      - name: Enable EPEL and CRB
+        run: |
+          dnf upgrade --refresh -y
+          dnf install -y dnf-plugins-core
+          dnf config-manager --set-enabled crb
+          dnf install -y epel-release
+        if: ${{ matrix.epel }}
+      # Runtime packages only, deliberately. Installing the -dev packages here would add the
+      # unversioned .so symlink and mask the very thing the binding packages now probe for, so a
+      # regression in versioned-SONAME resolution would sail through CI.
+      - name: Install Prerequisites using dnf
+        run: dnf makecache --refresh && dnf install -y findutils libicu libdeflate libargon2 tzdata
+        if: ${{ matrix.packageManager == 'dnf' }}
+      # ICU's runtime package carries the ABI version in its name (libicu70 on jammy, libicu76 on
+      # trixie) and has no stable alias, so match it by pattern. libicu-dev was the old way to stay
+      # version-independent, but it drags in the unversioned symlink and defeats the check below.
+      - name: Install Prerequisites using apt
+        run: apt-get update -y && apt-get install -y curl '^libicu[0-9]+$' libdeflate0 libargon2-1 tzdata
+        if: ${{ matrix.packageManager == 'apt' }}
+      # Versioned-SONAME resolution is only under test while the unversioned symlink is absent. If a
+      # base image or a package ever starts shipping it, every probe would succeed on the first try
+      # and a regression in the fallback would sail through CI, so fail loudly instead of silently
+      # testing nothing.
+      - name: Assert the unversioned .so symlinks are absent
+        run: |
+          found=""
+          for lib in libicuuc libicui18n libdeflate libargon2; do
+            hit=$(ls /usr/lib/*/"$lib".so /usr/lib64/"$lib".so 2>/dev/null || true)
+            if [ -n "$hit" ]; then
+              found="$found $hit"
+            fi
+          done
+          if [ -n "$found" ]; then
+            echo "::error::Unversioned symlinks present, so CI is no longer exercising versioned SONAME resolution:$found"
+            exit 1
+          fi
+          echo "No unversioned symlinks present; versioned SONAME resolution is under test."
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+      - name: Install .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - name: Build
+        run: dotnet run --project Projects/BuildTool -- --config Release --skip-prereqs
+      - name: Test
+        # blame-hang kills a stuck test host after 10 minutes and reports the in-flight
+        # tests plus a process dump instead of hanging until the job timeout.
+        run: |
+          dotnet test --logger trx --results-directory ./TestResults --blame-hang --blame-hang-timeout 10m --blame-hang-dump-type full
+          if [ -z "$(find ./TestResults -name '*.trx' 2>/dev/null)" ]; then
+            echo "::error::No test result files were produced - no test projects ran. Failing to avoid masking failures."
+            exit 1
+          fi
+      - name: Upload test results on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: TestResults-${{ matrix.name }}
+          path: ./TestResults
+          if-no-files-found: ignore

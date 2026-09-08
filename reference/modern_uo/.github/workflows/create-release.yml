@@ -1,0 +1,38 @@
+name: Create Release
+
+on:
+  repository_dispatch:
+    types: [release]
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    - name: Install .NET
+      uses: actions/setup-dotnet@v6
+      with:
+        global-json-file: global.json
+    - name: Compute version
+      uses: dotnet/nbgv@v0.5.2
+      id: nbgv
+    - name: Push version tag
+      run: |
+        git tag ${{ steps.nbgv.outputs.Version }}
+        git push origin ${{ steps.nbgv.outputs.Version }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    - name: Create Release
+      uses: softprops/action-gh-release@v3
+      with:
+        tag_name: ${{ steps.nbgv.outputs.Version }}
+        name: ${{ steps.nbgv.outputs.Version }}
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

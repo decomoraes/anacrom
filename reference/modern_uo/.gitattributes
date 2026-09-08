@@ -1,0 +1,36 @@
+# General file endings
+*                       binary
+*.*                     text=auto -binary
+
+# Text
+*.bat                   text eol=crlf
+*.cmd                   text eol=crlf
+*.cs                    text diff=csharp eol=lf
+*.css                   text diff=css eol=lf
+*.csproj                text eol=crlf
+*.html                  text diff=html eol=lf
+*.json                  text eol=lf
+*.md                    text eol=lf -binary
+*.props                 text eol=crlf
+*.ruleset               text eol=crlf
+*.sh                    text eol=lf
+*.sln                   text eol=crlf
+*.svg                   text eol=lf
+*.yml                   text eol=lf
+
+# Assets
+*.jpg                   binary
+*.jpeg                  binary
+*.png                   binary
+
+# Specific paths
+publish.cmd             text eol=lf
+
+# Do not export
+/.git export-ignore
+/.github export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
+
+# Collapse in Github
+**/Migrations/*.v*.json linguist-generated=true
