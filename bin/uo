@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Thin wrapper so `uo ...` works from anywhere.
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+exec env PYTHONPATH="$here${PYTHONPATH:+:$PYTHONPATH}" python3 -m anacrom.cli "$@"
