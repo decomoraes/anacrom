@@ -699,7 +699,13 @@ def cmd_jev(daemon: Daemon, seconds: float = 120.0, ticks: int = 0, radius: int 
         log_path=CONFIG_DIR / "jev.jsonl",
         creatures_path=CONFIG_DIR / "creatures.json",
     )
-    return pilot.run(seconds=seconds, max_ticks=ticks)
+    started = time.time()
+    summary = pilot.run(seconds=seconds, max_ticks=ticks)
+    # Kept for `uo stats`: what a run earned, which a terminal scrollback forgets.
+    if not dry_run and summary["ticks"]:
+        from .stats import record_run
+        record_run(CONFIG_DIR / "runs.jsonl", summary, started, client.world.player.name)
+    return summary
 
 
 if __name__ == "__main__":

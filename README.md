@@ -123,6 +123,18 @@ probability distributions and the confidence, which is what you tune the bars
 in `anacrom/autopilot.py` against. `uo stop` ends a run early; `uo set
 jev_model jev-1.13.0` pins a version once the bars are tuned.
 
+### How it is doing
+
+```bash
+bin/uo stats                       # calls, tokens, cost, gold, kills, creatures
+bin/uo stats --html stats.html     # the same as a page with charts
+```
+
+Every run is saved to `~/.anacrom/runs.jsonl` when it ends, next to the decision
+log and the creatures Jev has judged. `uo stats` reads those files, so it works
+with the client stopped. Kills and items are counted from the first run made
+after they were added; earlier runs show a dash, not a zero.
+
 ## Places
 
 There is no map data, so the client keeps its own gazetteer:

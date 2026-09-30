@@ -377,6 +377,10 @@ def build_parser() -> argparse.ArgumentParser:
                    help="health percent to run at, without asking")
     p.add_argument("--dry-run", action="store_true", help="decide, but do nothing")
 
+    p = add("stats", "what Jev has done: calls, tokens, gold, kills, creatures")
+    p.add_argument("--html", metavar="FILE", default="",
+                   help="write the stats page to FILE instead of printing")
+
     p = add("place", "remember and revisit places")
     p.add_argument("action", choices=["here", "add", "list", "near", "find", "remove", "go"])
     p.add_argument("rest", nargs="*")
@@ -418,6 +422,21 @@ def main(argv: list[str] | None = None) -> int:
         while Path(ns.socket).exists() and time.time() < deadline:
             time.sleep(0.1)
         print(response.get("message", "stopped"))
+        return 0
+
+    if command == "stats":
+        # Reads the files Jev leaves behind, so the client need not be running.
+        from .config import CONFIG_DIR
+        from .stats import build_stats, render_text
+        stats = build_stats(CONFIG_DIR)
+        if ns.html:
+            from .stats_page import render_page
+            Path(ns.html).write_text(render_page(stats), encoding="utf-8")
+            print(f"wrote {ns.html}")
+        elif ns.json:
+            print(json.dumps(stats, indent=2))
+        else:
+            print(render_text(stats))
         return 0
 
     if command == "config":

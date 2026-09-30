@@ -94,6 +94,9 @@ Read how the run ended before doing anything else:
 - `stopped: Jev failed: ...` - a 401 means the key is wrong. Anything else,
   play by hand for a while.
 
+`uo stats` shows what Jev has done so far: calls, tokens, gold, kills, and what
+it has learned about each creature.
+
 It hunts red and orange names, grey monsters Jev has judged it can take, and
 anything that attacks first. People are never targets, and creatures judged too
 strong (or that have beaten it) are kept away from, so walking it through town
