@@ -247,6 +247,19 @@ class Gump:
 
 
 @dataclass
+class Waypoint:
+    """A marker the server puts on the client's map -- our own corpse, above all."""
+    serial: int
+    x: int
+    y: int
+    z: int
+    map: int
+    kind: int
+    name: str
+    corpse: bool = False
+
+
+@dataclass
 class VendorItem:
     serial: int
     graphic: int
@@ -274,6 +287,7 @@ class World:
         self.login_complete = False
         self.last_packet_at = time.time()
         self.warnings: deque[str] = deque(maxlen=50)
+        self.waypoints: dict[int, Waypoint] = {}
 
     # -- lookup ------------------------------------------------------------
 

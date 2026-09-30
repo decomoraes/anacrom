@@ -4,10 +4,11 @@ from __future__ import annotations
 import errno
 import socket
 import time
+from collections import deque
 from pathlib import Path
 
 from ..protocol.huffman import Decompressor
-from ..protocol.packets import DEFAULT_PROFILE, Profile, ProtocolError, Writer, frame
+from ..protocol.packets import VAR, DEFAULT_PROFILE, Profile, ProtocolError, Writer, frame
 
 
 class Connection:
@@ -37,6 +38,7 @@ class Connection:
 
         self._decompressor: Decompressor | None = None
         self._pending = b""          # decompressed bytes not yet a whole packet
+        self._recent: deque[bytes] = deque(maxlen=6)    # for diagnosing a desync
         self._closed = False
         self._capture = open(capture, "ab") if capture else None
 
@@ -136,7 +138,29 @@ class Connection:
         try:
             packets, self._pending = frame(self._pending, self.profile)
         except ProtocolError as exc:
-            head = self._pending[:64].hex(" ")
             self.close()
-            raise ProtocolError(f"{exc}; stream head: {head}") from None
+            raise ProtocolError(f"{exc}; {self._desync_report()}") from None
+        self._recent.extend(packets)
         return packets
+
+    def _desync_report(self) -> str:
+        """Where framing went wrong: the bad length is in the last good packet."""
+        good = list(self._recent)
+        data, offset = self._pending, 0
+        while offset < len(data):
+            try:
+                size = self.profile.length_of(data[offset])
+            except ProtocolError:
+                break
+            if size == VAR:
+                size = int.from_bytes(data[offset + 1:offset + 3], "big")
+                if size < 3:
+                    break
+            if offset + size > len(data):
+                break
+            good.append(data[offset:offset + size])
+            offset += size
+        ids = " ".join(f"{p[0]:02X}({len(p)})" for p in good[-10:])
+        last = good[-1][:48].hex(" ") if good else "(none)"
+        failed = self._pending[offset:offset + 48].hex(" ")
+        return f"framed before it: {ids}; last good packet: {last}; then: {failed}"

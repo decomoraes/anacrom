@@ -13,7 +13,9 @@ from __future__ import annotations
 import zlib
 
 from ..protocol.packets import VAR, Reader, length_of
-from .state import LAYERS, SKILL_NAMES, Gump, Item, JournalEntry, Mobile, VendorItem
+from .state import (
+    LAYERS, SKILL_NAMES, Gump, Item, JournalEntry, Mobile, VendorItem, Waypoint,
+)
 
 HANDLERS: dict[int, callable] = {}
 
@@ -150,6 +152,8 @@ def _vital(client, world, r: Reader) -> None:
         player = world.player
         if packet_id == 0xA1:
             player.hits, player.hits_max = current, maximum
+            if current > 0:
+                player.dead = False             # nothing announces a resurrection
         elif packet_id == 0xA2:
             player.mana, player.mana_max = current, maximum
         else:
@@ -555,6 +559,26 @@ def _unicode_message(client, world, r: Reader) -> None:
     speaker = r.ascii(30)
     text = r.raw(r.remaining).decode("utf-16-be", "replace").split("\x00", 1)[0]
     _record_speech(client, world, serial, kind, hue, speaker, text)
+
+
+CORPSE_WAYPOINT = 1046414
+
+
+@handles(0xE5)
+def _show_waypoint(client, world, r: Reader) -> None:
+    serial = r.u32()
+    x, y, z, map_index = r.u16(), r.u16(), r.i8(), r.u8()
+    kind = r.u16()
+    r.u16()                                     # ignore the object
+    label = r.u32()
+    name = r.raw(r.remaining).decode("utf-16-le", "replace").split("\x00", 1)[0]
+    world.waypoints[serial] = Waypoint(serial, x, y, z, map_index, kind, name,
+                                       corpse=label == CORPSE_WAYPOINT)
+
+
+@handles(0xE6)
+def _remove_waypoint(client, world, r: Reader) -> None:
+    world.waypoints.pop(r.u32(), None)
 
 
 def _cliloc_text(cliloc: int, arguments: str) -> str:

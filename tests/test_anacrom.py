@@ -87,6 +87,29 @@ class Framing(unittest.TestCase):
         self.assertEqual(packets[0], b"\x05\xDE\xAD\xBE\xEF")
         self.assertEqual(tail, b"")
 
+    def test_quest_arrow_carries_a_serial_for_high_seas(self):
+        # Young players get an arrow to the nearest healer when they die.
+        arrow = bytes.fromhex("ba 01 0d af 0a b9 00 01 79 19")
+        after = bytes.fromhex("1d 41 3f 18 e7")
+        packets, rest = frame(arrow + after, Profile(high_seas=True))
+        self.assertEqual(packets, [arrow, after])
+        old_arrow = bytes.fromhex("ba 01 0d af 0a b9")
+        packets, _ = frame(old_arrow + after, Profile(high_seas=False))
+        self.assertEqual(packets, [old_arrow, after])
+
+    def test_waypoint_removals_are_five_bytes(self):
+        run = bytes.fromhex("e6 00 01 00 6c e6 00 06 6b 4a")
+        packets, rest = frame(run)
+        self.assertEqual(packets, [run[:5], run[5:]])
+
+    def test_sa_health_bar_has_a_length_field(self):
+        # Captured from UOAlive mid-fight: 0x16 is framed like 0x17, not fixed 5.
+        bar = bytes.fromhex("16 000c 15c29288 0001 0001 00")
+        sound = bytes.fromhex("54 01 048f 0000 0da1 0a9b 0007")
+        packets, rest = frame(bar + sound)
+        self.assertEqual(packets, [bar, sound])
+        self.assertEqual(rest, b"")
+
     def test_partial_packet_is_held_back(self):
         packets, tail = frame(b"\x05\xDE\xAD")
         self.assertEqual(packets, [])
@@ -230,6 +253,12 @@ class Handlers(unittest.TestCase):
         self.assertEqual(player.race, "human")
         self.assertEqual(player.followers_max, 5)
 
+    def test_hit_points_after_death_mean_resurrection(self):
+        self.feed(b"\x2C\x00")
+        self.assertTrue(self.world.player.dead)
+        self.feed(b"\xA1" + struct.pack(">IHH", 0x0000AAAA, 100, 11))
+        self.assertFalse(self.world.player.dead)
+
     def test_vitals(self):
         self.feed(b"\xA1" + struct.pack(">IHH", 0x0000AAAA, 120, 90))
         self.feed(b"\xA2" + struct.pack(">IHH", 0x0000AAAA, 50, 25))
@@ -301,6 +330,19 @@ class Handlers(unittest.TestCase):
         self.feed(variable(0x3A, body))
         self.assertAlmostEqual(self.world.skills["Alchemy"]["value"], 65.5)
         self.assertAlmostEqual(self.world.skills["Alchemy"]["cap"], 100.0)
+
+    def test_corpse_waypoint_is_kept_until_removed(self):
+        # ServUO marks your corpse on the map with 0xE5 and clears it with 0xE6.
+        name = "Jevensen".encode("utf-16-le") + b"\x00\x00"
+        body = struct.pack(">IHHbBHHI", 0x4172690A, 3490, 2716, 7, 1, 1, 0, 1046414)
+        body += name + b"\x00\x00"
+        self.feed(variable(0xE5, body))
+        point = self.world.waypoints[0x4172690A]
+        self.assertEqual((point.x, point.y, point.map, point.name), (3490, 2716, 1, "Jevensen"))
+        self.assertTrue(point.corpse)
+
+        self.feed(b"\xE6" + struct.pack(">I", 0x4172690A))
+        self.assertNotIn(0x4172690A, self.world.waypoints)
 
     def test_unhandled_packet_is_ignored_not_fatal(self):
         self.feed(b"\x54" + b"\x00" * 11)                       # a sound effect

@@ -39,7 +39,7 @@ _FIXED: dict[int, int] = {
     0x12: VAR,  # text command (cast, open door, ...)
     0x13: 10,   # equip request
     0x15: 9,    # follow
-    0x16: 5,    # new health bar status (poison/yellow)
+    0x16: VAR,  # health bar status, SA clients; ServUO sends it, ModernUO never does
     0x17: VAR,  # health bar status update
     0x1A: VAR,  # world item appeared
     0x1B: 37,   # login confirm (our character enters the world)
@@ -123,7 +123,7 @@ _FIXED: dict[int, int] = {
     0xB7: VAR,  # help / tooltip text
     0xB8: VAR,  # profile
     0xB9: 5,    # enable locked client features
-    0xBA: 6,    # quest arrow
+    0xBA: 6,    # quest arrow; see Profile, High Seas makes it 10
     0xBC: 3,    # season / cursor
     0xBF: VAR,  # general information (many subcommands)
     0xC0: 36,   # hued effect
@@ -142,6 +142,8 @@ _FIXED: dict[int, int] = {
     0xDF: VAR,  # buff / debuff
     0xE2: 10,   # new character animation
     0xE3: VAR,  # ?
+    0xE5: VAR,  # show waypoint; ServUO (Misc/Waypoints.cs), not in ModernUO
+    0xE6: 5,    # remove waypoint; ServUO
     0xF0: VAR,  # krriosclient / new movement
     0xF1: 9,    # time sync
     0xF2: 25,   # new world item (SA)
@@ -205,6 +207,11 @@ class Profile:
         """Length of 0x99, multi placement / house revision."""
         return 30 if self.high_seas else 26
 
+    @property
+    def quest_arrow_length(self) -> int:
+        """Length of 0xBA, quest arrow; High Seas adds the target's serial."""
+        return 10 if self.high_seas else 6
+
     def length_of(self, packet_id: int) -> int:
         if packet_id == 0x24:
             return self.container_length
@@ -212,6 +219,8 @@ class Profile:
             return self.container_item_length
         if packet_id == 0x99:
             return self.multi_length
+        if packet_id == 0xBA:
+            return self.quest_arrow_length
         try:
             return _FIXED[packet_id]
         except KeyError:
