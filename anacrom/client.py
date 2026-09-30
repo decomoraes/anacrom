@@ -32,6 +32,9 @@ STEP_INTERVAL_WALK = 0.40
 STEP_INTERVAL_RUN = 0.22
 STEP_INTERVAL_MOUNTED_RUN = 0.13
 
+MAX_REPLANS = 40                # refusals in one walk before we call it blocked
+REFUSAL_MEMORY = 120.0          # seconds a refused step stays off the map
+
 TEXT_COMMAND_USE_SKILL = 0x24
 TEXT_COMMAND_CAST_FROM_BOOK = 0x27
 TEXT_COMMAND_OPEN_SPELLBOOK = 0x43
@@ -50,6 +53,7 @@ class Config:
     capture: str | None = None
     run_by_default: bool = True
     mounted_speed: bool = False
+    uo_data: str | None = None          # folder with tiledata.mul, map*.uop, statics*.mul
     profile: Profile = field(default_factory=lambda: DEFAULT_PROFILE)
 
 
@@ -72,6 +76,8 @@ class Client:
         self._properties_wanted: list[int] = []
         self._properties_requested: set[int] = set()
         self._events: list[Callable] = []
+        self._terrain: dict[int, object] = {}
+        self._refused: dict[tuple[int, int, str], float] = {}
         self._damage_log: list[tuple[float, int, int]] = []
         self._swing_log: list[tuple[float, int, int]] = []
 
@@ -86,6 +92,14 @@ class Client:
         if not config.account:
             raise LoginError("no account configured")
 
+        early_map: list[int] = []
+
+        def before_confirmation(packet: bytes) -> None:
+            # 0xBF/0x08 can come ahead of 0x1B; Trammel and Felucca share
+            # coordinates, so without it we would plan on the wrong map.
+            if packet[0] == 0xBF and len(packet) >= 6 and packet[3:5] == b"\x00\x08":
+                early_map.append(packet[5])
+
         result = login(
             config.host,
             config.port,
@@ -95,6 +109,7 @@ class Client:
             server_index=config.shard,
             profile=self.profile,
             capture=config.capture,
+            on_packet=before_confirmation,
         )
         self.connection = result.connection
         self.login_result = result
@@ -105,6 +120,8 @@ class Client:
         player.body = result.body
         player.x, player.y, player.z = result.position
         player.direction = result.direction
+        if early_map:
+            player.map = early_map[-1]
 
         # What a client does on entering the world: announce itself, ask for the
         # numbers the paperdoll shows, and set how far it wants to see.
@@ -244,6 +261,28 @@ class Client:
     def resync(self) -> None:
         self.send(Writer(0x22, self.profile).u8(0).u8(0))
 
+    # -- the ground --------------------------------------------------------
+
+    def terrain(self):
+        """The map we stand on, from the client's data files; None without them."""
+        folder = self.config.uo_data
+        if not folder:
+            return None
+        index = self.world.player.map
+        terrain = self._terrain.get(index)
+        if terrain is None:
+            from .world.mapdata import MapData
+            from .world.movement import Terrain
+            shared = next(iter(self._terrain.values()), None)
+            try:
+                terrain = Terrain(MapData(folder, index, shared.tiles if shared else None))
+            except (OSError, ValueError, KeyError) as exc:
+                self.world.warn(f"map data unusable, walking without it: {exc}")
+                self.config.uo_data = None
+                return None
+            self._terrain[index] = terrain
+        return terrain
+
     # -- movement ----------------------------------------------------------
 
     @property
@@ -267,6 +306,14 @@ class Client:
 
         player = self.world.player
         facing = player.facing
+
+        # The server acknowledges a step without saying how high we ended up,
+        # so with map data we work the height out the way it does.
+        landing = None
+        terrain = self.terrain()
+        if terrain is not None and facing == direction:
+            fits, z = terrain.step(player.x, player.y, player.z, direction)
+            landing = z if fits else None
 
         code = DIRECTIONS.index(direction) | (0x80 if run else 0x00)
         sequence = self._move_sequence
@@ -294,6 +341,8 @@ class Client:
             dx, dy = DIRECTION_DELTAS[direction]
             player.x += dx
             player.y += dy
+            if landing is not None:
+                player.z = landing
             outcome = "moved"
 
         return {"outcome": outcome, "position": (player.x, player.y, player.z),
@@ -308,11 +357,76 @@ class Client:
         stop_within: int = 0,
         on_step: Callable[[dict], bool] | None = None,
     ) -> dict:
-        """Walk towards a tile, sidestepping whatever we bump into.
+        """Walk to a tile: by a planned route with map data, feeling the way without."""
+        terrain = self.terrain()
+        if terrain is None:
+            return self._walk_blind(x, y, run, max_steps, stop_within, on_step)
+        return self._walk_route(terrain, x, y, run, max_steps, stop_within, on_step)
 
-        There is no map data here, so this is the same thing a player does when
-        they cannot see the whole route: head the right way, and when a wall
-        stops you, try the next direction round and carry on.
+    def _walk_route(self, terrain, x: int, y: int, run: bool | None, max_steps: int,
+                    stop_within: int, on_step: Callable[[dict], bool] | None) -> dict:
+        """Plan with the server's own movement rules, walk it, re-plan on refusal.
+
+        The files hold the land and the fixed objects; houses and things we have
+        not been shown do not appear in them, so a refused step is remembered
+        for a while and the next plan goes round it.
+        """
+        player = self.world.player
+        steps = plans = 0
+        while True:
+            if distance((player.x, player.y), (x, y)) <= stop_within:
+                return {"arrived": True, "steps": steps, "position": player.position}
+            if steps >= max_steps:
+                return {"arrived": False, "steps": steps, "stopped": "step limit",
+                        "position": player.position}
+            if plans >= MAX_REPLANS:
+                return {"arrived": False, "steps": steps, "stopped": "blocked",
+                        "position": player.position}
+
+            now = time.time()
+            refused = {edge for edge, at in self._refused.items() if now - at < REFUSAL_MEMORY}
+            terrain.see_items(self.world.items.values())
+            route = terrain.route(player.position, (x, y), stop_within, refused)
+            plans += 1
+            if route is None:
+                return {"arrived": False, "steps": steps, "stopped": "no route",
+                        "position": player.position}
+
+            for direction in route:
+                here = (player.x, player.y)
+                self._open_door_ahead(terrain, direction)
+                result = self.step(direction, run=run)
+                if result["outcome"] == "turned":
+                    result = self.step(direction, run=run)
+                steps += 1
+                if on_step is not None and not on_step(result):
+                    return {"arrived": False, "steps": steps, "stopped": "caller",
+                            "position": player.position}
+                if result["outcome"] != "moved":
+                    self._refused[(here[0], here[1], direction)] = time.time()
+                    break
+                if steps >= max_steps or distance((player.x, player.y), (x, y)) <= stop_within:
+                    break
+
+    def _open_door_ahead(self, terrain, direction: str) -> None:
+        """Open a closed door the next step would walk into."""
+        player = self.world.player
+        terrain.see_items(self.world.items.values())
+        if terrain.step(player.x, player.y, player.z, direction, ignore_doors=False)[0]:
+            return
+        dx, dy = DIRECTION_DELTAS[direction]
+        for item in list(self.world.items.values()):
+            if (item.container == 0 and (item.x, item.y) == (player.x + dx, player.y + dy)
+                    and terrain.is_door(item.graphic)):
+                self.use(item.serial)
+                self.pump(0.3)
+
+    def _walk_blind(self, x: int, y: int, run: bool | None, max_steps: int,
+                    stop_within: int, on_step: Callable[[dict], bool] | None) -> dict:
+        """Head the right way, and when a wall stops you, try the next direction round.
+
+        What a player does when they cannot see the whole route, and all we can
+        do without the client's map files.
         """
         player = self.world.player
         steps = 0

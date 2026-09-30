@@ -25,6 +25,7 @@ DEFAULTS = {
     "capture": None,
     "run_by_default": True,
     "mounted_speed": False,
+    "uo_data": "",
     "high_seas": True,
     "container_grid_lines": True,
 }
@@ -46,6 +47,7 @@ def load_config() -> Config:
         ("password", "ANACROM_PASSWORD"),
         ("character", "ANACROM_CHARACTER"),
         ("capture", "ANACROM_CAPTURE"),
+        ("uo_data", "ANACROM_UO_DATA"),
     ):
         if env.get(name):
             data[key] = env[name]
@@ -62,6 +64,7 @@ def load_config() -> Config:
         capture=data["capture"],
         run_by_default=bool(data["run_by_default"]),
         mounted_speed=bool(data["mounted_speed"]),
+        uo_data=data["uo_data"] or None,
         profile=Profile(
             high_seas=bool(data["high_seas"]),
             container_grid_lines=bool(data["container_grid_lines"]),
@@ -90,4 +93,5 @@ def redacted() -> dict:
         "password": "(set)" if config.password else "(unset)",
         "character": config.character or "(first character)",
         "capture": config.capture or "(off)",
+        "uo_data": config.uo_data or "(unset: walking without a map)",
     }
