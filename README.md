@@ -95,6 +95,34 @@ bin/uo script scripts/follow.py 0x00111111
 Scripts get `client`, `world`, `player`, `args`, `daemon` and `check_interrupt`
 in scope. Call `check_interrupt()` in any loop so `uo stop` can cut it short.
 
+## Letting Jev play
+
+`uo jev` hands the controls to [Jev](https://docs.typesafe.ai/), TypeSafe's
+System One model: once a second it describes the moment in words and gets
+back a typed decision -- fight, flee, heal, loot or wait, and which creature
+to hit -- each with a calibrated confidence.
+
+```bash
+export TYPESAFE_API_KEY=...           # or: bin/uo set typesafe_api_key ...
+bin/uo jev --dry-run --ticks 5        # watch what it would do
+bin/uo jev --seconds 300 --flee 30    # let it play for five minutes
+```
+
+Jev makes the judgement calls and code does the rest. Health and distance
+reach it as words ("badly wounded", "adjacent"), not numbers. It is only
+offered the actions that are possible right now, and only red and orange names,
+or whatever swung first, count as targets. Two things never reach it: dropping
+under `--flee` percent with a threat near means running, and an answer below
+the confidence bar for its action means waiting (or running, if Jev also rates
+the danger serious). When someone speaks to the character, the autopilot stops
+and prints what was said, because Jev picks between options and cannot write a
+reply.
+
+Every decision is appended to `~/.anacrom/jev.jsonl` with the state, the full
+probability distributions and the confidence, which is what you tune the bars
+in `anacrom/autopilot.py` against. `uo stop` ends a run early; `uo set
+jev_model jev-1.13.0` pins a version once the bars are tuned.
+
 ## Places
 
 There is no map data, so the client keeps its own gazetteer:
@@ -131,6 +159,7 @@ attempt to hide what it is.
 python3 -m unittest discover -s tests -v
 ```
 
-45 tests: compression round-trips, framing and length-table behaviour, every
-packet handler against bytes built by hand, and an end-to-end run against the
-stub shard.
+71 tests: compression round-trips, framing and length-table behaviour, every
+packet handler against bytes built by hand, the Jev client against a fake
+TypeSafe, the autopilot's judgement, and an end-to-end run against the stub
+shard.

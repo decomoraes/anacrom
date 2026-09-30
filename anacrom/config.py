@@ -28,6 +28,8 @@ DEFAULTS = {
     "uo_data": "",
     "high_seas": True,
     "container_grid_lines": True,
+    "typesafe_api_key": "",
+    "jev_model": "jev-latest",
 }
 
 
@@ -72,6 +74,20 @@ def load_config() -> Config:
     )
 
 
+def load_jev_settings() -> tuple[str, str]:
+    """The TypeSafe key and model, read fresh so ``uo set`` needs no restart.
+
+    ``TYPESAFE_API_KEY`` is the name TypeSafe's own SDKs read, so a key already
+    exported for them works here too.
+    """
+    data = dict(DEFAULTS)
+    if CONFIG_PATH.exists():
+        data.update(json.loads(CONFIG_PATH.read_text(encoding="utf-8")))
+    key = os.environ.get("TYPESAFE_API_KEY") or data["typesafe_api_key"]
+    model = os.environ.get("ANACROM_JEV_MODEL") or data["jev_model"]
+    return key, model
+
+
 def save_config(updates: dict) -> Path:
     data = dict(DEFAULTS)
     if CONFIG_PATH.exists():
@@ -86,6 +102,7 @@ def save_config(updates: dict) -> Path:
 
 def redacted() -> dict:
     config = load_config()
+    jev_key, jev_model = load_jev_settings()
     return {
         "host": config.host,
         "port": config.port,
@@ -94,4 +111,6 @@ def redacted() -> dict:
         "character": config.character or "(first character)",
         "capture": config.capture or "(off)",
         "uo_data": config.uo_data or "(unset: walking without a map)",
+        "typesafe_api_key": "(set)" if jev_key else "(unset)",
+        "jev_model": jev_model,
     }

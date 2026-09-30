@@ -77,3 +77,25 @@ Call `check_interrupt()` inside any loop so `uo stop` can cut it short. Read
 
 `uo stop` interrupts the running action immediately - it is answered out of
 band, so it works even while a walk or script is mid-flight.
+
+## Handing the reflexes to Jev
+
+`uo jev --seconds 300` lets TypeSafe's Jev decide each second, choosing
+between fight, flee, heal, loot and wait, while you stay the one who plans. It
+needs `TYPESAFE_API_KEY`. Try `uo jev --dry-run --ticks 5` first on an
+unfamiliar area.
+
+Read how the run ended before doing anything else:
+
+- `stopped: someone is talking to us` - the lines follow, prefixed `>`. Jev
+  cannot write a reply, so you answer with `uo say`, then restart it if you
+  want.
+- `stopped: we died` - see the uo-recovery skill.
+- `stopped: Jev failed: ...` - a 401 means the key is wrong. Anything else,
+  play by hand for a while.
+
+It hunts red and orange names, grey monsters Jev has judged it can take, and
+anything that attacks first. People are never targets, and creatures judged too
+strong (or that have beaten it) are kept away from, so walking it through town
+is safe. It roams within about 30 tiles of where it started; aim it with
+`uo walk` or `uo place go`, then hand over.

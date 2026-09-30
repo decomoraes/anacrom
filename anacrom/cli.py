@@ -182,6 +182,26 @@ def render(command: str, result) -> str:
             tail = f"\nresult: {result['returned']}{tail}"
         return (output.rstrip() + tail).strip() or "(no output)"
 
+    if command == "jev" and "stopped" in result:
+        rows = [result["output"].rstrip()] if result.get("output") else []
+        actions = ", ".join(f"{k} {v}" for k, v in result["actions"].items()) or "none"
+        rows.append(f"stopped: {result['stopped']} after {result['seconds']}s,"
+                    f" {result['ticks']} ticks ({actions})")
+        if result["jev_calls"]:
+            rows.append(f"jev: {result['jev_calls']} calls to {result['model']},"
+                        f" median {result['median_latency_ms']} ms,"
+                        f" {result['input_tokens']} tokens ~ ${result['cost_usd']:.4f}")
+        gold = result.get("gold")
+        rows.append(f"hp {_bar(*result['health'])}"
+                    + (f"   gold {gold[0]} -> {gold[1]}" if gold else ""))
+        for line in result.get("speech", []):
+            rows.append(f"  > {line}")
+        if result.get("dry_run"):
+            rows.append("(dry run: nothing was done)")
+        if result.get("log"):
+            rows.append(f"decisions logged to {result['log']}")
+        return "\n".join(rows)
+
     if isinstance(result, dict):
         return "\n".join(f"{k}: {json.dumps(v) if isinstance(v, (dict, list)) else v}"
                          for k, v in result.items())
@@ -349,6 +369,14 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("path")
     p.add_argument("args", nargs="*")
 
+    p = add("jev", "let Jev decide: fight, flee, heal and loot on its own")
+    p.add_argument("--seconds", type=float, default=120.0, help="how long to play")
+    p.add_argument("--ticks", type=int, default=0, help="stop after this many decisions")
+    p.add_argument("--radius", type=int, default=12, help="how far to look")
+    p.add_argument("--flee", type=int, default=30,
+                   help="health percent to run at, without asking")
+    p.add_argument("--dry-run", action="store_true", help="decide, but do nothing")
+
     p = add("place", "remember and revisit places")
     p.add_argument("action", choices=["here", "add", "list", "near", "find", "remove", "go"])
     p.add_argument("rest", nargs="*")
@@ -474,6 +502,10 @@ def main(argv: list[str] | None = None) -> int:
         args = {"path": str(Path(ns.path).resolve()), "args": ns.args}
     elif command == "raw":
         args = {"hex_data": ns.hex_data}
+    elif command == "jev":
+        args = {"seconds": ns.seconds, "ticks": ns.ticks, "radius": ns.radius,
+                "flee_percent": ns.flee, "dry_run": ns.dry_run}
+        ns.timeout = max(ns.timeout, ns.seconds + 60)
     elif command == "place":
         action, rest = ns.action, ns.rest
         command = f"place_{action}"

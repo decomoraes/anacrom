@@ -677,5 +677,30 @@ def cmd_place_go(daemon: Daemon, name: str, stop_within: int = 1) -> dict:
     return result
 
 
+# --------------------------------------------------------------------------
+# jev
+# --------------------------------------------------------------------------
+
+@command("jev")
+def cmd_jev(daemon: Daemon, seconds: float = 120.0, ticks: int = 0, radius: int = 12,
+            flee_percent: int = 30, dry_run: bool = False) -> dict:
+    """Hand the controls to Jev until time runs out, we are stopped, or spoken to."""
+    from .autopilot import Autopilot, Policy
+    from .config import CONFIG_DIR, load_jev_settings
+    from .jev import Jev
+
+    client = _require_connection(daemon)
+    key, model = load_jev_settings()
+    pilot = Autopilot(
+        client, Jev(key, model=model),
+        Policy(radius=radius, flee_percent=flee_percent),
+        should_stop=lambda: daemon.interrupted,
+        dry_run=dry_run,
+        log_path=CONFIG_DIR / "jev.jsonl",
+        creatures_path=CONFIG_DIR / "creatures.json",
+    )
+    return pilot.run(seconds=seconds, max_ticks=ticks)
+
+
 if __name__ == "__main__":
     raise SystemExit(main())

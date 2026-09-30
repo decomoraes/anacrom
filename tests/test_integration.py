@@ -128,6 +128,37 @@ class EndToEnd(unittest.TestCase):
         import json
         json.loads(json.dumps(self.client.snapshot()))
 
+    def test_jev_autopilot_reads_the_stub_world(self):
+        from anacrom.autopilot import Autopilot, Policy
+        from anacrom.jev import Response
+
+        asked = []
+
+        class Canned:
+            def ask(self, state, questions):
+                asked.append((state, questions))
+                loot = {"type": "choice", "choice": "loot", "confidence": 0.9,
+                        "probabilities": {"loot": 0.95, "wait": 0.05}}
+                return Response("jev-test", {"action": loot}, {"input_tokens": 400}, 0.01)
+
+        self.client.pump(0.6)
+        summary = Autopilot(self.client, Canned(), Policy(tick=0.1)).run(
+            seconds=10, max_ticks=3)
+
+        # Gold at our feet and an innocent guard: loot is on offer, fight is not.
+        state, questions = asked[0]
+        self.assertEqual(set(questions["action"]["criteria"]), {"loot", "roam", "wait"})
+        self.assertEqual(state["loot_nearby"]["gold"], "adjacent")
+        guard = state["creatures"][0]
+        self.assertEqual((guard["name"], guard["rating"], guard["distance"]),
+                         ("a town guard", "not a monster", "close"))
+
+        # One try at the gold; after that the only question is roam or wait,
+        # and "loot" is no longer on offer, so the canned answer falls back.
+        self.assertEqual(summary["jev_calls"], 3)
+        self.assertEqual(summary["actions"], {"loot": 1, "wait": 2})
+        self.assertIn("picked up 120 gold coins", summary["output"])
+
 
 if __name__ == "__main__":
     unittest.main()
