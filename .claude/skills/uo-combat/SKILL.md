@@ -14,7 +14,7 @@ script cannot make for you.
 Check three numbers in `uo status`: your health, the target's `notoriety`, and
 its distance.
 
-- `innocent` and `animal` are usually safe to leave alone - killing an innocent
+- `innocent` names, and grey `attackable` animals, are usually safe to leave alone - killing an innocent
   makes you a criminal and the guards will act on it.
 - `criminal`, `enemy` and `murderer` will fight you.
 - A mobile whose name you do not recognise is worth a `uo look 0x...` first.

@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 NOTORIETY = {
     1: "innocent",
     2: "friend",
-    3: "animal",
+    3: "attackable",            # grey: animals, and on many shards monsters too
     4: "criminal",
     5: "enemy",
     6: "murderer",

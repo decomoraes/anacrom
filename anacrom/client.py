@@ -228,6 +228,12 @@ class Client:
         self._damage_log.append((time.time(), serial, amount))
         del self._damage_log[:-200]
 
+    def attackers(self, within: float = 6.0) -> set[int]:
+        """Serials that swung at us in the last few seconds."""
+        since = time.time() - within
+        me = self.world.player.serial
+        return {a for at, a, d in self._swing_log if d == me and at >= since}
+
     # -- naming ------------------------------------------------------------
 
     def request_properties(self, serial: int) -> None:
