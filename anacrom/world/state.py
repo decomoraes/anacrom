@@ -7,6 +7,7 @@ few lines of chat say" -- rather than mirroring the wire format.
 from __future__ import annotations
 
 import math
+import re
 import time
 from collections import deque
 from dataclasses import dataclass, field
@@ -55,6 +56,25 @@ SKILL_NAMES = [
     "Focus", "Chivalry", "Bushido", "Ninjitsu", "Spellweaving", "Mysticism",
     "Imbuing", "Throwing",
 ]
+
+
+# What the client's cliloc table would call the things we buy and carry most.
+# A tile-name cliloc is 1020000 plus the item's graphic, and arrives as "#1023962"
+# in properties or bare in a vendor's list.
+TILE_NAMES = {
+    0x0E21: "bandage", 0x0EED: "gold coin", 0x0EFA: "spellbook",
+    0x0F7A: "black pearl", 0x0F7B: "blood moss", 0x0F84: "garlic",
+    0x0F85: "ginseng", 0x0F86: "mandrake root", 0x0F88: "nightshade",
+    0x0F8C: "sulfurous ash", 0x0F8D: "spider's silk",
+}
+_TILE_CLILOC = re.compile(r"#?\b(10[23]\d{4})\b")
+
+
+def readable(text: str) -> str:
+    """Swap the tile-name clilocs we know for their words; leave the rest."""
+    def swap(match: re.Match) -> str:
+        return TILE_NAMES.get(int(match.group(1)) - 1020000, match.group(0))
+    return _TILE_CLILOC.sub(swap, text)
 
 
 def distance(a: tuple[int, int], b: tuple[int, int]) -> int:
@@ -280,6 +300,7 @@ class World:
         self.target = TargetRequest()
         self.gumps: dict[int, Gump] = {}
         self.vendor_items: dict[int, list[VendorItem]] = {}
+        self.buy_list_pending = 0         # shop stock whose buy window has not opened yet
         self.opened_containers: list[int] = []
         self.light_level = 0
         self.season = 0

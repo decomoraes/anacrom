@@ -109,6 +109,16 @@ class EndToEnd(unittest.TestCase):
         entry = self.client.world.journal[-1]
         self.assertEqual(entry.speaker, "A Town Guard")
 
+    def test_keyword_speech_round_trips(self):
+        self.client.say("I would like to buy")
+        self.assertTrue(
+            self.client.wait_for(
+                lambda: any("You said: I would like to buy" in e.text
+                            for e in self.client.world.journal),
+                3.0,
+            )
+        )
+
     def test_opening_a_container_lists_it(self):
         items = self.client.open_container(BACKPACK_SERIAL)
         self.assertEqual(len(items), 1)

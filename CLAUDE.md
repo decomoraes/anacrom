@@ -11,6 +11,7 @@ Headless Ultima Online client. Python 3.10, standard library only, no build step
 | `anacrom/world/` | World model and the packet handlers that fill it |
 | `anacrom/client.py` | Actions and movement -- the layer everything else calls |
 | `anacrom/daemon.py` | Long-lived process, command registry, script host |
+| `anacrom/protocol/speech.py` | Speech keyword ids NPCs answer to (`buy`, `train`, `bank`...) |
 | `anacrom/cli.py` | The `uo` command |
 | `tools/dev_server.py` | Stub shard used by the integration tests |
 | `reference/modern_uo/` | Vendored server source, used as the protocol oracle |

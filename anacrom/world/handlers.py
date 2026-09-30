@@ -14,7 +14,7 @@ import zlib
 
 from ..protocol.packets import VAR, Reader, length_of
 from .state import (
-    LAYERS, SKILL_NAMES, Gump, Item, JournalEntry, Mobile, VendorItem, Waypoint,
+    LAYERS, SKILL_NAMES, Gump, Item, JournalEntry, Mobile, VendorItem, Waypoint, readable,
 )
 
 HANDLERS: dict[int, callable] = {}
@@ -464,10 +464,19 @@ def _container_contents(client, world, r: Reader) -> None:
         client.request_properties(item.serial)
 
 
+VENDOR_BUY_GUMP = 0x0030
+
+
 @handles(0x24)
 def _open_container(client, world, r: Reader) -> None:
     serial = r.u32()
-    r.u16()                                     # gump graphic
+    gump = r.u16()
+    if gump == VENDOR_BUY_GUMP and world.buy_list_pending:
+        # The buy window opens on the vendor, not on its stock; file the list
+        # under the vendor too, which is the serial a buy is addressed to.
+        world.vendor_items[serial] = world.vendor_items[world.buy_list_pending]
+        world.buy_list_pending = 0
+        return
     if serial not in world.opened_containers:
         world.opened_containers.append(serial)
     del world.opened_containers[:-16]
@@ -503,7 +512,7 @@ def _properties(client, world, r: Reader) -> None:
         raw = r.raw(arg_length)
         # Cliloc arguments are little-endian UTF-16, unlike the rest of the protocol.
         text = raw.decode("utf-16-le", "replace").rstrip("\x00")
-        lines.append(text if text else f"cliloc:{cliloc}")
+        lines.append(readable(text) if text else f"cliloc:{cliloc}")
 
     entity = world.entity(serial)
     if entity is None:
@@ -710,17 +719,30 @@ def _compressed_gump(client, world, r: Reader) -> None:
 
 @handles(0x74)
 def _buy_list(client, world, r: Reader) -> None:
-    vendor = r.u32()
+    # Prices only, keyed by the shop's stock container.  The stock itself came
+    # just before in 0x3C, in reverse order, each item's x being its place in
+    # this list plus one (OutgoingVendorBuyPackets) -- that is how a price
+    # finds the serial a buy has to name.
+    stock = r.u32()
     count = r.u8()
+    by_place = {item.x: item for item in world.contents_of(stock)}
     entries = []
-    for _ in range(count):
+    for place in range(1, count + 1):
         if r.remaining < 5:
             break
         price = r.u32()
-        name = r.ascii(r.u8())
-        entries.append(VendorItem(serial=0, graphic=0, amount=0, price=price, name=name))
-    world.vendor_items[vendor] = entries
-    client.on_vendor_list(vendor, entries)
+        name = readable(r.ascii(r.u8()))
+        item = by_place.get(place)
+        entries.append(VendorItem(
+            serial=item.serial if item else 0,
+            graphic=item.graphic if item else 0,
+            amount=item.amount if item else 0,
+            price=price,
+            name=name,
+        ))
+    world.vendor_items[stock] = entries
+    world.buy_list_pending = stock
+    client.on_vendor_list(stock, entries)
 
 
 @handles(0x9E)

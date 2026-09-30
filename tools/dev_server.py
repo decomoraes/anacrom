@@ -106,7 +106,7 @@ class Session:
         elif packet_id == 0x02:
             self.movement(packet)
         elif packet_id == 0xAD:
-            text = packet[12:].decode("utf-16-be", "replace").rstrip("\x00")
+            text, _keywords = self.read_speech(packet)
             self.said.append(text)
             self.log(f"player says: {text}")
             self.echo(text)
@@ -121,6 +121,28 @@ class Session:
             self.send_container(struct.unpack_from(">I", packet, 1)[0])
         elif packet_id == 0x73:
             self.send(b"\x73" + packet[1:2])
+
+    @staticmethod
+    def read_speech(packet: bytes) -> tuple[str, list[int]]:
+        """Unpack 0xAD the way the server does (IncomingMessagePackets)."""
+        if not packet[3] & 0xC0:
+            return packet[12:].decode("utf-16-be", "replace").rstrip("\x00"), []
+        offset = 12
+        value = int.from_bytes(packet[offset:offset + 2], "big")
+        offset += 2
+        count, hold = value >> 4, value & 0xF
+        keywords = []
+        for i in range(count):
+            if i % 2 == 0:
+                keywords.append((hold << 8) | packet[offset])
+                offset += 1
+            else:
+                value = int.from_bytes(packet[offset:offset + 2], "big")
+                offset += 2
+                keywords.append(value >> 4)
+                hold = value & 0xF
+        text = packet[offset:].split(b"\x00", 1)[0].decode("utf-8", "replace")
+        return text, keywords
 
     # -- the login half ----------------------------------------------------
 

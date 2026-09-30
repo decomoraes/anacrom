@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from typing import Callable
 
 from .net.login import CLIENT_VERSION_STRING, LoginError, LoginResult, login
+from .protocol import speech
 from .protocol.packets import DEFAULT_PROFILE, Profile, Writer
 from .world.handlers import dispatch
 from .world.state import (
@@ -363,12 +364,18 @@ class Client:
     # -- talking -----------------------------------------------------------
 
     def say(self, text: str, hue: int = 0x03B2, kind: int = 0x00) -> None:
+        # NPCs answer keyword ids, not words; see protocol/speech.py.
+        keywords = speech.keywords_in(text)
         writer = Writer(0xAD, self.profile)
-        writer.u8(kind)
+        writer.u8(kind | (speech.ENCODED if keywords else 0))
         writer.u16(hue)
         writer.u16(3)                           # font
         writer.raw(b"ENU\x00")
-        writer.unicode_z(text)
+        if keywords:
+            writer.raw(speech.pack(keywords))
+            writer.raw(text.encode("utf-8") + b"\x00")
+        else:
+            writer.unicode_z(text)
         self.send(writer)
 
     def emote(self, text: str) -> None:

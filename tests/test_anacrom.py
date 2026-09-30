@@ -26,6 +26,7 @@ from anacrom.net.login import (                                 # noqa: E402
     LoginError,
 )
 from anacrom.poi import Place, Places                           # noqa: E402
+from anacrom.protocol import speech                             # noqa: E402
 from anacrom.protocol._codebook import CODEBOOK, TERMINATOR     # noqa: E402
 from anacrom.protocol.huffman import Decompressor               # noqa: E402
 from anacrom.protocol.packets import (                          # noqa: E402
@@ -39,6 +40,7 @@ from anacrom.protocol.packets import (                          # noqa: E402
 )
 from anacrom.world.handlers import dispatch                     # noqa: E402
 from anacrom.world.state import World, direction_to, distance   # noqa: E402
+from tools.dev_server import Session                            # noqa: E402
 
 
 def compress(payload: bytes) -> bytes:
@@ -331,6 +333,25 @@ class Handlers(unittest.TestCase):
         self.assertAlmostEqual(self.world.skills["Alchemy"]["value"], 65.5)
         self.assertAlmostEqual(self.world.skills["Alchemy"]["cap"], 100.0)
 
+    def test_buy_list_finds_its_serials_and_its_vendor(self):
+        # 0x3C sends the stock in reverse, each item's x its place in the list.
+        stock, vendor = 0x4000B0B0, 0x00001111
+        body = struct.pack(">H", 2)
+        body += struct.pack(">IHBHHHBIH", 0x4000F002, 0x0F85, 0, 20, 2, 1, 0, stock, 0)
+        body += struct.pack(">IHBHHHBIH", 0x4000F001, 0x0F84, 0, 20, 1, 1, 0, stock, 0)
+        self.feed(variable(0x3C, body))
+
+        body = struct.pack(">IB", stock, 2)
+        body += struct.pack(">I", 3) + bytes([8]) + b"1023972\x00"       # garlic
+        body += struct.pack(">I", 4) + bytes([8]) + b"1023973\x00"       # ginseng
+        self.feed(variable(0x74, body))
+        self.feed(b"\x24" + struct.pack(">IH", vendor, 0x0030))
+
+        entries = self.world.vendor_items[vendor]
+        self.assertEqual([(e.serial, e.name, e.price) for e in entries],
+                         [(0x4000F001, "garlic", 3), (0x4000F002, "ginseng", 4)])
+        self.assertNotIn(vendor, self.world.opened_containers)
+
     def test_corpse_waypoint_is_kept_until_removed(self):
         # ServUO marks your corpse on the map with 0xE5 and clears it with 0xE6.
         name = "Jevensen".encode("utf-16-le") + b"\x00\x00"
@@ -347,6 +368,42 @@ class Handlers(unittest.TestCase):
     def test_unhandled_packet_is_ignored_not_fatal(self):
         self.feed(b"\x54" + b"\x00" * 11)                       # a sound effect
         self.assertTrue(True)
+
+
+class SpeechKeywords(unittest.TestCase):
+    """NPCs answer keyword ids, so these are checked against bytes by hand."""
+
+    def said(self, text: str) -> bytes:
+        sent = []
+        client = Client(Config())
+        client.connection = type("Open", (), {"closed": False, "send": sent.append})()
+        client.say(text)
+        return sent[0].build()
+
+    def test_plain_speech_is_utf16(self):
+        body = bytes([0x00]) + b"\x03\xB2\x00\x03ENU\x00" + "hi".encode("utf-16-be") + b"\x00\x00"
+        self.assertEqual(self.said("hi"), b"\xAD" + struct.pack(">H", len(body) + 3) + body)
+
+    def test_one_keyword(self):
+        # 0xC0 flag; count 1 and id 0x171 as twelve bits each; UTF-8 text.
+        body = bytes([0xC0]) + b"\x03\xB2\x00\x03ENU\x00" + b"\x00\x11\x71" + b"Lyle buy\x00"
+        self.assertEqual(self.said("Lyle buy"), b"\xAD" + struct.pack(">H", len(body) + 3) + body)
+
+    def test_two_keywords_pad_the_last_nibble(self):
+        body = bytes([0xC0]) + b"\x03\xB2\x00\x03ENU\x00" + b"\x00\x20\x3C\x17\x10"
+        body += b"vendor buy\x00"
+        self.assertEqual(self.said("vendor buy"), b"\xAD" + struct.pack(">H", len(body) + 3) + body)
+
+    def test_matching(self):
+        self.assertEqual(speech.keywords_in("Lyle buy"), [0x171])
+        self.assertEqual(speech.keywords_in("BANK"), [0x02])
+        self.assertEqual(speech.keywords_in("Lyle train Magery"), [0x6C])
+        self.assertEqual(speech.keywords_in("well met"), [])
+
+    def test_stub_shard_decodes_it_like_the_server(self):
+        packet = b"\xAD\x00\x00" + bytes([0xC0]) + b"\x03\xB2\x00\x03ENU\x00"
+        packet += b"\x00\x20\x3C\x17\x10" + b"vendor buy\x00"
+        self.assertEqual(Session.read_speech(packet), ("vendor buy", [0x3C, 0x171]))
 
 
 class Geometry(unittest.TestCase):
