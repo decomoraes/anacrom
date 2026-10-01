@@ -24,12 +24,14 @@ BRITAIN = {
 }
 
 REAGENTS = {"mandrake root": 0x0F86, "garlic": 0x0F84, "ginseng": 0x0F85,
-            "black pearl": 0x0F7A, "sulfurous ash": 0x0F8C, "nightshade": 0x0F88}
+            "black pearl": 0x0F7A, "sulfurous ash": 0x0F8C, "nightshade": 0x0F88,
+            "spider's silk": 0x0F8D}
 BAGS = {0x0E75, 0x0E76, 0x0E79, 0x09B0}
 
 # Magery training spells (cast-macro id, mana, reagents), cheapest useful first.
 BLESS = (17, 9, ("mandrake root", "garlic"))
 CURE = (11, 6, ("garlic", "ginseng"))
+GREATER_HEAL = (29, 11, ("garlic", "ginseng", "mandrake root", "spider's silk"))  # 4th circle
 MANA_COST = {1: 4, 2: 6, 3: 9, 4: 11, 5: 14, 6: 20, 7: 40, 8: 50}
 FIZZLE = "502632"
 NO_REAGENTS = "502630"
