@@ -24,7 +24,8 @@ HEAL_BELOW = 65
 CORPSE, GOLD = 0x2006, 0x0EED
 REAGENTS = {0x0F7A, 0x0F7B, 0x0F84, 0x0F85, 0x0F86, 0x0F88, 0x0F8C, 0x0F8D}
 CAST_RANGE = 8
-KITE_WITHIN = 2
+KITE_WITHIN = 4
+GEMS = range(0x0F0F, 0x0F31)
 
 minutes = float(args[0]) if args else 10.0
 radius = int(args[1]) if len(args) > 1 else 14
@@ -153,7 +154,7 @@ def loot(near):
     gold = 0
     for item in client.open_container(corpse.serial):
         check_interrupt()
-        if item.graphic == GOLD or item.graphic in REAGENTS:
+        if item.graphic == GOLD or item.graphic in REAGENTS or item.graphic in GEMS:
             client.move_item(item.serial, player.backpack)
             if item.graphic == GOLD:
                 gold += item.amount
@@ -222,9 +223,12 @@ while time.time() - started < minutes * 60:
         spell = spell_for_now()
         if spell and gap is not None and gap <= KITE_WITHIN:
             # Too close for a caster: open the gap before the next cast.
-            dx = (player.x > mob.x) - (player.x < mob.x)
-            dy = (player.y > mob.y) - (player.y < mob.y)
-            client.walk_to(player.x + dx * 5, player.y + dy * 5, max_steps=4, on_step=keep_going)
+            near = [m for m in world.nearby_mobiles(10) if is_prey(m)] or [mob]
+            cx = sum(m.x for m in near) / len(near)
+            cy = sum(m.y for m in near) / len(near)
+            dx = (player.x > cx) - (player.x < cx)
+            dy = (player.y > cy) - (player.y < cy)
+            client.walk_to(player.x + dx * 7, player.y + dy * 7, max_steps=6, on_step=keep_going)
             continue
         if spell and gap is not None and gap <= CAST_RANGE:
             client.cast(spell, target=target.serial)
