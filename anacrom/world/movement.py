@@ -25,6 +25,10 @@ from .state import DIRECTION_DELTAS, DIRECTIONS
 PERSON_HEIGHT = 16
 STEP_HEIGHT = 2
 MOVABLE = 0x20                          # item flag in 0x1A/0xF3
+# Walking onto one of these takes us somewhere else, so a planned route must
+# never cross them.  The map files cannot tell us; what the server shows does.
+PORTAL_GRAPHICS = {0x0F6C, 0x0DDA}      # moongate art
+PORTAL_WORDS = ("moongate", "teleporter")
 
 
 
@@ -37,15 +41,20 @@ class Terrain:
         self.map = mapdata
         self.tiles = mapdata.tiles
         self._items: dict[tuple[int, int], list[tuple[int, int, bool]]] = {}
+        self._portals: set[tuple[int, int]] = set()
 
     def see_items(self, items: Iterable) -> None:
         """Take in what lies on the ground now: (graphic, z, movable) by tile."""
         by_tile: dict[tuple[int, int], list[tuple[int, int, bool]]] = {}
+        portals: set[tuple[int, int]] = set()
         for item in items:
             if item.container == 0:
                 by_tile.setdefault((item.x, item.y), []).append(
                     (item.graphic, item.z, bool(item.flags & MOVABLE)))
-        self._items = by_tile
+                if item.graphic in PORTAL_GRAPHICS or any(
+                        word in (item.name or "").lower() for word in PORTAL_WORDS):
+                    portals.add((item.x, item.y))
+        self._items, self._portals = by_tile, portals
 
     def is_door(self, graphic: int) -> bool:
         return graphic <= self.tiles.max_item and bool(self.tiles.item(graphic)[0] & DOOR)
@@ -158,6 +167,8 @@ class Terrain:
         dx, dy = DIRECTION_DELTAS[direction]
         fx, fy = x + dx, y + dy
         if not (0 <= fx < self.map.width and 0 <= fy < self.map.height):
+            return False, z
+        if (fx, fy) in self._portals:
             return False, z
 
         start_z, start_top = self._start_z(x, y, z, self._dynamic(x, y, ignore_doors))

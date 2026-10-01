@@ -53,7 +53,7 @@ class FakeMap(MapData):
 class Door:
     def __init__(self, x, y):
         self.x, self.y, self.z = x, y, 0
-        self.graphic, self.container, self.flags = DOOR_TILE, 0, 0
+        self.graphic, self.container, self.flags, self.name = DOOR_TILE, 0, 0, ""
 
 
 class Movement(unittest.TestCase):
@@ -85,6 +85,24 @@ class Movement(unittest.TestCase):
         self.assertTrue(terrain.step(10, 10, 0, "east")[0])
         self.assertFalse(terrain.step(10, 10, 0, "east", ignore_doors=False)[0])
         self.assertTrue(terrain.is_door(DOOR_TILE))
+
+    def test_a_moongate_is_never_stepped_on(self):
+        class Gate:
+            x, y, z, graphic, container, flags, name = 11, 10, 0, 0x0F6C, 0, 0, ""
+
+        class Named(Gate):
+            graphic, name = 0x1BC3, "Idle Teleporter Tile"
+
+        for gate in (Gate, Named):
+            terrain = Terrain(FakeMap())
+            terrain.see_items([gate()])
+            self.assertFalse(terrain.step(10, 10, 0, "east")[0])
+            route = terrain.route((9, 10, 0), (13, 10))
+            self.assertIsNotNone(route)
+            x = 9
+            for direction in route:
+                x += {"east": 1, "northeast": 1, "southeast": 1}.get(direction, 0)
+            self.assertEqual(x, 13)
 
     def test_route_goes_round_a_wall(self):
         wall = {(20, y): [(WALL, 0)] for y in range(5, 16)}
