@@ -24,6 +24,7 @@ HEAL_BELOW = 65
 CORPSE, GOLD = 0x2006, 0x0EED
 REAGENTS = {0x0F7A, 0x0F7B, 0x0F84, 0x0F85, 0x0F86, 0x0F88, 0x0F8C, 0x0F8D}
 CAST_RANGE = 8
+KITE_WITHIN = 2
 
 minutes = float(args[0]) if args else 10.0
 radius = int(args[1]) if len(args) > 1 else 14
@@ -219,6 +220,12 @@ while time.time() - started < minutes * 60:
 
         gap = world.distance_to(target.serial)
         spell = spell_for_now()
+        if spell and gap is not None and gap <= KITE_WITHIN:
+            # Too close for a caster: open the gap before the next cast.
+            dx = (player.x > mob.x) - (player.x < mob.x)
+            dy = (player.y > mob.y) - (player.y < mob.y)
+            client.walk_to(player.x + dx * 5, player.y + dy * 5, max_steps=4, on_step=keep_going)
+            continue
         if spell and gap is not None and gap <= CAST_RANGE:
             client.cast(spell, target=target.serial)
             casts += 1
