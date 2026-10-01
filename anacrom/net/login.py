@@ -18,8 +18,8 @@ from .connection import Connection
 
 # What we tell the server we are.  The server gates optional packet shapes on
 # this, so Profile has to agree with it.
-CLIENT_VERSION = (7, 0, 95, 0)
-CLIENT_VERSION_STRING = "7.0.95.0"
+CLIENT_VERSION = (7, 0, 114, 2)
+CLIENT_VERSION_STRING = ".".join(map(str, CLIENT_VERSION))
 
 # Bit flags in the 0x5D / 0xA9 client flag field: expansions we claim to own.
 CLIENT_FLAG_ALL_EXPANSIONS = 0x0000001F

@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "shard": "UOAlive",
+  "character": "Jevensen",
+  "updated_utc": "2026-10-01T23:40:34.791806+00:00",
+  "maps": {
+    "1": "Trammel",
+    "0": "Felucca",
+    "4": "Tokuno Islands"
+  },
+  "notes": [
+    "Coordinates are verified approach points or gate tiles; vendors can wander nearby.",
+    "Prices and stock are observations from 2026-10-01, not guaranteed current quotes.",
+    "These places are also registered in the clients existing places.json for uo place find/go.",
+    "Portal tiles require manual final movement and sometimes double-clicking; ordinary routes avoid them."
+  ],
+  "go_for": {
+    "greater_heal_garlic_ginseng_mandrake": [
+      "Abrah reagent shop"
+    ],
+    "greater_heal_spiders_silk": [
+      "Ariana reagent shop",
+      "Fleta mage shop"
+    ],
+    "lightning_mandrake": [
+      "Abrah reagent shop",
+      "Barrett reagent shop",
+      "Ariana reagent shop"
+    ],
+    "lightning_sulfurous_ash": [
+      "Ariana reagent shop",
+      "Fleta mage shop"
+    ],
+    "black_pearls": [
+      "Ariana reagent shop",
+      "Fleta mage shop"
+    ],
+    "magery_self_training": [
+      "Quiet Britain training"
+    ],
+    "manual_earth_elemental_hunts": [
+      "New Haven mine waiting point"
+    ],
+    "travel_to_britain": [
+      "Mine exit to New Haven bank",
+      "New Haven roof gate to Britain"
+    ],
+    "travel_to_new_haven": [
+      "Britain public moongate"
+    ],
+    "resurrection": [
+      "Britain corpse summoner"
+    ],
+    "new_player_lrc_quest": [
+      "Hanging Mace Sanctuary arrival"
+    ],
+    "town_travel": [
+      "Vesper crystal portal arrival"
+    ],
+    "travel_to_hanging_mace": [
+      "Vesper city moongate",
+      "Magincia exchange public gate"
+    ],
+    "specialist_supplies": [
+      "Magincia magical stone exchange"
+    ],
+    "city_loyalty": [
+      "Britain trade minister",
+      "Britain city bulletin board"
+    ],
+    "community_supplies": [
+      "Community Center arrival"
+    ],
+    "equipment_repairs": [
+      "Community Center repair benches"
+    ],
+    "banking": [
+      "Vesper bank"
+    ]
+  },
+  "places": [
+    {
+      "name": "Abrah reagent shop",
+      "x": 1411,
+      "y": 1714,
+      "z": 20,
+      "map": 1,
+      "kind": "vendor",
+      "notes": "Buy ginseng, garlic, mandrake root and nightshade (3 gold each), or blood moss (5 gold). Abrah the herbalist, serial 655; say Abrah buy. Bulk stock verified 2026-10-01. NPC wanders nearby.",
+      "added_at": 1790888178.5289056
+    },
+    {
+      "name": "Ariana reagent shop",
+      "x": 1497,
+      "y": 1659,
+      "z": 27,
+      "map": 1,
+      "kind": "vendor",
+      "notes": "Ethereal Goods. Buy spiders silk, sulfurous ash, garlic and mandrake root (3 gold each), or black pearls (5 gold). Ariana the alchemist, serial 415409; say Ariana buy. Ginseng stock was limited. NPC wanders nearby.",
+      "added_at": 1790888178.5289233
+    },
+    {
+      "name": "Barrett reagent shop",
+      "x": 1497,
+      "y": 1659,
+      "z": 27,
+      "map": 1,
+      "kind": "vendor",
+      "notes": "Ethereal Goods. Bulk garlic and mandrake root (3 gold each). Barrett the herbalist, serial 415411; say Barrett buy. Ginseng stock was limited. NPC wanders nearby.",
+      "added_at": 1790888178.5289254
+    },
+    {
+      "name": "Fleta mage shop",
+      "x": 1411,
+      "y": 1824,
+      "z": 0,
+      "map": 1,
+      "kind": "vendor",
+      "notes": "Buy black pearls (5 gold), ginseng, spiders silk and sulfurous ash (3 gold), and spell scrolls. Fleta the mage, serial 416915; say Fleta buy. Garlic and mandrake stock was only 40 each; prefer Abrah for those.",
+      "added_at": 1790888178.5289273
+    },
+    {
+      "name": "Quiet Britain training",
+      "x": 1394,
+      "y": 1636,
+      "z": 30,
+      "map": 1,
+      "kind": "guard_zone",
+      "notes": "Quiet spot verified with no nearby mobiles and full HP during Greater Heal self-training. Check current surroundings before each session. Greater Heal uses garlic, ginseng, mandrake root and spiders silk; preserve black pearls for hunting.",
+      "added_at": 1790888178.5289292
+    },
+    {
+      "name": "New Haven mine waiting point",
+      "x": 3510,
+      "y": 2777,
+      "z": 25,
+      "map": 1,
+      "kind": "dungeon",
+      "notes": "Outside the New Haven Mine entrance. Moving west to tile 3508,2777 triggers the mine teleporter; the first movement request may only turn. Hunt only while the user is present, and avoid paragon elementals.",
+      "added_at": 1790888178.5289457
+    },
+    {
+      "name": "Mine exit to New Haven bank",
+      "x": 5914,
+      "y": 356,
+      "z": 0,
+      "map": 1,
+      "kind": "moongate",
+      "notes": "Gate named Back to New Haven Bank, serial 1079701476. Walk within 1 tile, manually step onto it, then double-click. Arrival is bank roof 3482,2570,48. Routes avoid portal tiles.",
+      "added_at": 1790888178.528947
+    },
+    {
+      "name": "New Haven roof gate to Britain",
+      "x": 3481,
+      "y": 2570,
+      "z": 48,
+      "map": 1,
+      "kind": "moongate",
+      "notes": "Britain Bank gate, serial 1529031526, on the New Haven bank roof. Stand on it and double-click. Arrival is 1382,1714,20 in Britain. Routes avoid portal tiles.",
+      "added_at": 1790888178.528949
+    },
+    {
+      "name": "Britain arrival from New Haven",
+      "x": 1382,
+      "y": 1714,
+      "z": 20,
+      "map": 1,
+      "kind": "note",
+      "notes": "Verified arrival from the Britain Bank gate on New Haven bank roof. Abrah reagent shop is nearby at 1411,1714.",
+      "added_at": 1790888178.528951
+    },
+    {
+      "name": "Britain public moongate",
+      "x": 1336,
+      "y": 1997,
+      "z": 5,
+      "map": 1,
+      "kind": "moongate",
+      "notes": "PublicGate, serial 1073844579. Stand on it and use it; identify the menu by title Public Moongate, never by fixed gump id. GO button 1, switch 200 = New Haven, 201 = Britain. New Haven arrival is the bank roof around 3483,2569,48.",
+      "added_at": 1790888178.5289533
+    },
+    {
+      "name": "Britain corpse summoner",
+      "x": 1418,
+      "y": 1715,
+      "z": 20,
+      "map": 1,
+      "kind": "healer",
+      "notes": "Saxon the corpse summoner, serial 2209, observed nearby at 1416,1717,20. This is the resurrection area. If dead, inspect existing gumps before using ghostprompt because it toggles the death menu.",
+      "added_at": 1790888178.5289552
+    },
+    {
+      "name": "Hanging Mace Sanctuary arrival",
+      "x": 2136,
+      "y": 3121,
+      "z": 0,
+      "map": 0,
+      "kind": "note",
+      "notes": "Verified public moongate arrival from Britain; resync may correct ground z to 6. Choose Noteworthy Establishments (button 107), Hanging Mace Sanctuary (switch 204), GO (button 1). New-player LRC quest NPCs are on the roof at z46, but the roof teleporter blocks Young characters. NPC speech worked from the ground. To leave, stand at 2133,3114/3115 under the crystal portal and say Vesper Mint; this arrives in Trammel at 2899,676,0. Keep Young status.",
+      "added_at": 1790889763.8489351
+    },
+    {
+      "name": "Vesper crystal portal arrival",
+      "x": 2899,
+      "y": 676,
+      "z": 0,
+      "map": 1,
+      "kind": "bank",
+      "notes": "Crystal Portal command Vesper Mint arrives here. Vesper Travel Agent is nearby; public city moongate north at 2901,660.",
+      "added_at": 1790890036.5840714
+    },
+    {
+      "name": "Vesper city moongate",
+      "x": 2901,
+      "y": 660,
+      "z": 0,
+      "map": 1,
+      "kind": "moongate",
+      "notes": "Verified gate serial 1201245462. Stand on tile and double-click. Noteworthy Establishments tab (107), Hanging Mace Sanctuary switch204, GO1.",
+      "added_at": 1790890036.5856326
+    },
+    {
+      "name": "Magincia magical stone exchange",
+      "x": 3675,
+      "y": 2115,
+      "z": 25,
+      "map": 1,
+      "kind": "vendor",
+      "notes": "Public moongate Special Locations (button106), Magical Stone Exchange switch201, GO1. Verified arrival 3675,2115,25. Nearby New Player Stone and specialist exchange stones; inspect each price and currency before buying.",
+      "added_at": 1790890308.3173125
+    },
+    {
+      "name": "Magincia exchange public gate",
+      "x": 3679,
+      "y": 2119,
+      "z": 27,
+      "map": 1,
+      "kind": "moongate",
+      "notes": "Verified public gate serial1074228497 beside the stone exchange. Public Moongate menu supports Noteworthy Establishments to Hanging Mace Sanctuary.",
+      "added_at": 1790890435.9688697
+    },
+    {
+      "name": "Britain trade minister",
+      "x": 1434,
+      "y": 1759,
+      "z": -2,
+      "map": 1,
+      "kind": "note",
+      "notes": "Verified Atlas arrival beside Allan the minister of trade (serial482), 1436,1760,-2. Donation crate serial1073775665 at1436,1759,-2 accepts raw fish/ribs and common resources. Food vendors on this dock.",
+      "added_at": 1790890769.9043367
+    },
+    {
+      "name": "Britain city bulletin board",
+      "x": 1482,
+      "y": 1717,
+      "z": 0,
+      "map": 1,
+      "kind": "note",
+      "notes": "Verified approach point beside board serial1073746062 at1481,1718,0, graphic0xa0c5. Citizenship may be required to read city messages. Do not include quest answers in saved location notes.",
+      "added_at": 1790891461.2879646
+    },
+    {
+      "name": "Community Center arrival",
+      "x": 557,
+      "y": 1342,
+      "z": 1,
+      "map": 4,
+      "kind": "note",
+      "notes": "Public moongate Special Locations (106), Community Center switch200, GO1. Public rune library and repair benches; inspect supplies and training facilities here.",
+      "added_at": 1790892032.37068
+    },
+    {
+      "name": "Community Center repair benches",
+      "x": 580,
+      "y": 1340,
+      "z": -4,
+      "map": 4,
+      "kind": "note",
+      "notes": "Repair benches verified at575,1330,2 (west) and589,1330,2 (east), with signs above them. These support equipment repairs and the final Hanging Mace quest step. Custom floor geometry may require manual movement; keep quest answers out of location notes.",
+      "added_at": 1790892780.5530155
+    },
+    {
+      "name": "Vesper bank",
+      "x": 2883,
+      "y": 684,
+      "z": 0,
+      "map": 1,
+      "kind": "bank",
+      "notes": "Fawne the banker, serial 418996. Bank and cash withdrawals verified this visit.",
+      "added_at": 1790896109.9072797
+    }
+  ],
+  "vendors": {
+    "Abrah reagent shop": {
+      "name": "Abrah",
+      "profession": "herbalist",
+      "serial": 655,
+      "buy_speech": "Abrah buy",
+      "last_observed_position": {
+        "x": 1412,
+        "y": 1714,
+        "z": 20,
+        "map": 1
+      },
+      "prices_gold": {
+        "ginseng": 3,
+        "garlic": 3,
+        "mandrake root": 3,
+        "nightshade": 3,
+        "blood moss": 5
+      },
+      "stock_before_our_purchases": {
+        "ginseng": 640,
+        "garlic": 640,
+        "mandrake root": 640,
+        "nightshade": 640,
+        "blood moss": 640
+      }
+    },
+    "Ariana reagent shop": {
+      "name": "Ariana",
+      "profession": "alchemist",
+      "serial": 415409,
+      "buy_speech": "Ariana buy",
+      "last_observed_position": {
+        "x": 1496,
+        "y": 1659,
+        "z": 27,
+        "map": 1
+      },
+      "prices_gold": {
+        "black pearl": 5,
+        "garlic": 3,
+        "ginseng": 3,
+        "mandrake root": 3,
+        "nightshade": 3,
+        "spider's silk": 3,
+        "sulfurous ash": 3
+      },
+      "stock_before_our_purchases": {
+        "black pearl": 640,
+        "garlic": 640,
+        "ginseng": 40,
+        "mandrake root": 640,
+        "nightshade": 40,
+        "spider's silk": 640,
+        "sulfurous ash": 640
+      }
+    },
+    "Barrett reagent shop": {
+      "name": "Barrett",
+      "profession": "herbalist",
+      "serial": 415411,
+      "buy_speech": "Barrett buy",
+      "last_observed_position": {
+        "x": 1497,
+        "y": 1660,
+        "z": 27,
+        "map": 1
+      },
+      "prices_gold": {
+        "ginseng": 3,
+        "garlic": 3,
+        "mandrake root": 3,
+        "nightshade": 3
+      },
+      "stock_before_our_purchases": {
+        "ginseng": 20,
+        "garlic": 640,
+        "mandrake root": 640,
+        "nightshade": 20
+      }
+    },
+    "Fleta mage shop": {
+      "name": "Fleta",
+      "profession": "mage",
+      "serial": 416915,
+      "buy_speech": "Fleta buy",
+      "last_observed_position": {
+        "x": 1412,
+        "y": 1825,
+        "z": 0,
+        "map": 1
+      },
+      "prices_gold": {
+        "black pearl": 5,
+        "garlic": 3,
+        "ginseng": 3,
+        "mandrake root": 3,
+        "spider's silk": 3,
+        "sulfurous ash": 3
+      },
+      "stock_before_our_purchases": {
+        "black pearl": 320,
+        "garlic": 40,
+        "ginseng": 320,
+        "mandrake root": 40,
+        "spider's silk": 320,
+        "sulfurous ash": 320
+      }
+    }
+  },
+  "navigation_examples": [
+    "bin/uo place find Abrah",
+    "bin/uo place go \"Abrah reagent shop\"",
+    "bin/uo place go \"Quiet Britain training\""
+  ]
+}
