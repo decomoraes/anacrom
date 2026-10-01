@@ -182,6 +182,24 @@ def render(command: str, result) -> str:
             tail = f"\nresult: {result['returned']}{tail}"
         return (output.rstrip() + tail).strip() or "(no output)"
 
+    if command == "play" and "tasks" in result:
+        rows = [result["output"]] if result.get("output") else []
+        rows.append(f"stopped: {result['stopped']} after {result['seconds']}s;"
+                    f" {result['jev_calls']} Jev calls, {result['deaths']} deaths,"
+                    f" {result['reconnects']} reconnects")
+        rows.append("  skills " + ", ".join(f"{n} {v}" for n, v in result["skills"].items())
+                    + f"   gold {result['gold']}")
+        return "\n".join(rows)
+
+    if command == "train" and "gains" in result:
+        rows = [result["output"]] if result.get("output") else []
+        rows.append(f"stopped: {result['stopped']} after {result['seconds']}s")
+        for name, (a, b) in result["gains"].items():
+            rows.append(f"  {name:<14} {a:5.1f} -> {b:5.1f}   ({result['uses'].get(name, 0)} uses)")
+        if result["jev_calls"]:
+            rows.append(f"  Jev asked {result['jev_calls']} times")
+        return "\n".join(rows)
+
     if command == "jev" and "stopped" in result:
         rows = [result["output"].rstrip()] if result.get("output") else []
         actions = ", ".join(f"{k} {v}" for k, v in result["actions"].items()) or "none"
@@ -377,6 +395,19 @@ def build_parser() -> argparse.ArgumentParser:
                    help="health percent to run at, without asking")
     p.add_argument("--dry-run", action="store_true", help="decide, but do nothing")
 
+    p = add("train", "train free skills (Evaluate Int, Anatomy, ...) with Jev judging safety")
+    p.add_argument("--seconds", type=float, default=600.0)
+    p.add_argument("--no-jev", action="store_true", help="plain rotation, no safety questions")
+    p.add_argument("--until", default="", metavar="SKILL",
+                   help="goal skills, comma separated, trained first and in order, e.g. "
+                        "'Evaluate Int,Meditation'; stops when all reach 100")
+
+    p = add("play", "let Jev run the character: train, shop, rest, and hunt if --hunt")
+    p.add_argument("--minutes", type=float, default=60.0)
+    p.add_argument("--hunt", action="store_true",
+                   help="allow hunting; say this only while you are at the keyboard")
+    p.add_argument("--max-deaths", type=int, default=2)
+
     p = add("stats", "what Jev has done: calls, tokens, gold, kills, creatures")
     p.add_argument("--html", metavar="FILE", default="",
                    help="write the stats page to FILE instead of printing")
@@ -521,6 +552,12 @@ def main(argv: list[str] | None = None) -> int:
         args = {"path": str(Path(ns.path).resolve()), "args": ns.args}
     elif command == "raw":
         args = {"hex_data": ns.hex_data}
+    elif command == "play":
+        args = {"minutes": ns.minutes, "hunt": ns.hunt, "max_deaths": ns.max_deaths}
+        ns.timeout = max(ns.timeout, ns.minutes * 60 + 120)
+    elif command == "train":
+        args = {"seconds": ns.seconds, "use_jev": not ns.no_jev, "until": ns.until}
+        ns.timeout = max(ns.timeout, ns.seconds + 60)
     elif command == "jev":
         args = {"seconds": ns.seconds, "ticks": ns.ticks, "radius": ns.radius,
                 "flee_percent": ns.flee, "dry_run": ns.dry_run}

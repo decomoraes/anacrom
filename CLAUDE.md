@@ -13,6 +13,7 @@ Headless Ultima Online client. Python 3.10, standard library only, no build step
 | `anacrom/daemon.py` | Long-lived process, command registry, script host |
 | `anacrom/jev.py` | TypeSafe Jev HTTP client (stdlib `urllib`, no SDK) |
 | `anacrom/autopilot.py` | `uo jev`: world into words, Jev's answer into one action per tick |
+| `anacrom/planner.py`, `anacrom/routines.py`, `anacrom/trainer.py` | `uo play` / `uo train`: Jev picks the next task; recovery, limits and the task routines |
 | `anacrom/stats.py`, `anacrom/stats_page.py` | `uo stats`: totals from `runs.jsonl`, `jev.jsonl`, `creatures.json`, and the HTML page |
 | `anacrom/world/mapdata.py`, `anacrom/world/movement.py` | Client map files read, and the server's step rules ported for route planning |
 | `anacrom/protocol/speech.py` | Speech keyword ids NPCs answer to (`buy`, `train`, `bank`...) |

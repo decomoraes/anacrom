@@ -153,6 +153,8 @@ class Daemon:
                     time.sleep(0.02)
             except Exception as exc:                     # a dropped shard, usually
                 self.client.world.warn(f"connection error: {exc}")
+                # The world is rebuilt on the next login, so keep the reason where it lasts.
+                print(f"{time.strftime('%H:%M:%S')} connection error: {exc}", file=sys.stderr, flush=True)
                 if self.client.connection is not None:
                     self.client.connection.close()
                 self.client.connection = None
@@ -705,6 +707,42 @@ def cmd_jev(daemon: Daemon, seconds: float = 120.0, ticks: int = 0, radius: int 
     if not dry_run and summary["ticks"]:
         from .stats import record_run
         record_run(CONFIG_DIR / "runs.jsonl", summary, started, client.world.player.name)
+    return summary
+
+
+@command("train")
+def cmd_train(daemon: Daemon, seconds: float = 600.0, use_jev: bool = True,
+              until: str = "") -> dict:
+    """Train the free skills, with Jev judging whether the spot is safe."""
+    from .config import load_jev_settings
+    from .jev import Jev
+    from .trainer import Trainer
+
+    client = _require_connection(daemon)
+    key, model = load_jev_settings()
+    jev = Jev(key, model=model) if use_jev and key else None
+    return Trainer(client, jev, should_stop=lambda: daemon.interrupted).run(
+        seconds, until=until)
+
+
+@command("play")
+def cmd_play(daemon: Daemon, minutes: float = 60.0, hunt: bool = False,
+             max_deaths: int = 2) -> dict:
+    """Let Jev run the character: train, shop, rest and, if told, hunt."""
+    from .config import CONFIG_DIR, load_jev_settings
+    from .jev import Jev
+    from .planner import Limits, Player
+
+    client = _require_connection(daemon)
+    key, model = load_jev_settings()
+    player = Player(client, Jev(key, model=model), hunt_allowed=hunt,
+                    limits=Limits(seconds=minutes * 60, max_deaths=max_deaths),
+                    should_stop=lambda: daemon.interrupted)
+    started = time.time()
+    summary = player.run()
+    from .stats import record_run
+    record_run(CONFIG_DIR / "plays.jsonl", {k: v for k, v in summary.items() if k != "output"},
+               started, client.world.player.name)
     return summary
 
 

@@ -123,6 +123,21 @@ probability distributions and the confidence, which is what you tune the bars
 in `anacrom/autopilot.py` against. `uo stop` ends a run early; `uo set
 jev_model jev-1.13.0` pins a version once the bars are tuned.
 
+### Letting Jev run the character
+
+```bash
+bin/uo train --seconds 3600 --until "Evaluate Int"   # free skills, Jev judging safety
+bin/uo play --minutes 60                             # Jev picks: train, shop, rest
+bin/uo play --minutes 60 --hunt                      # ...and hunt, only while you watch
+```
+
+`uo play` puts three layers on top of each other. Rules in code keep the character
+alive (resurrect, reconnect), cap deaths and time, and refuse to hunt unless
+`--hunt` says a person is at the keyboard. Jev picks the next task from the ones
+possible right now, from a short word-picture, and falls back to the safest
+option when unsure. The tasks are the routines above. Training is allowed
+unattended on UOAlive; killing for loot while away is not.
+
 ### How it is doing
 
 ```bash

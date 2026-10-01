@@ -34,8 +34,26 @@ uses = 0
 result = "time limit"
 deadline = time.time() + minutes * 60
 
+def red_name_near():
+    return next((m for m in world.nearby_mobiles(14) if m.hostile and m.notoriety == 6), None)
+
+
+def leave(mob):
+    """Murderers are not worth the skill points: walk off and stop."""
+    print(f"{mob.name or 'a murderer'} came within {world.distance_to(mob.serial)} tiles -- leaving")
+    dx = (player.x > mob.x) - (player.x < mob.x) or 1
+    dy = (player.y > mob.y) - (player.y < mob.y)
+    client.walk_to(player.x + dx * 20, player.y + dy * 20, max_steps=30,
+                   on_step=lambda _: not daemon.interrupted)
+
+
 while time.time() < deadline:
     check_interrupt()
+    danger = red_name_near()
+    if danger is not None:
+        leave(danger)
+        result = "a murderer came near"
+        break
     candidates = [m for m in world.nearby_mobiles(RANGE) if m.serial not in skipped]
     if not candidates:
         result = "nobody in range worth evaluating"
