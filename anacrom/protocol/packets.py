@@ -67,6 +67,7 @@ _FIXED: dict[int, int] = {
     0x38: 7,    # pathfind
     0x3A: VAR,  # skills update
     0x3B: VAR,  # buy item(s)
+    0x9F: VAR,  # sell item(s)
     0x3C: VAR,  # container contents
     0x4E: 6,    # personal light level
     0x4F: 2,    # overall light level

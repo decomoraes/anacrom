@@ -36,6 +36,7 @@ from anacrom.protocol.packets import (                          # noqa: E402
     Reader,
     Writer,
     frame,
+    is_known,
     length_of,
 )
 from anacrom.world.handlers import dispatch                     # noqa: E402
@@ -141,6 +142,11 @@ class ReaderWriter(unittest.TestCase):
         packet = Writer(0x03).ascii_z("hello").build()
         self.assertEqual(packet[0], 0x03)
         self.assertEqual(struct.unpack(">H", packet[1:3])[0], len(packet))
+
+    def test_sell_packet_is_known_and_variable_length(self):
+        self.assertTrue(is_known(0x9F))
+        packet = Writer(0x9F).u32(0x64455).u16(1).u32(0x413F18E7).u16(1).build()
+        self.assertEqual(frame(packet)[0], [packet])
 
     def test_fixed_writer_has_no_length_field(self):
         self.assertEqual(Writer(0x05).u32(0x12345678).build(), b"\x05\x12\x34\x56\x78")
