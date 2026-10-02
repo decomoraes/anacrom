@@ -1,0 +1,1101 @@
+{
+  "schema_version": 1,
+  "character": "Jevensen",
+  "shard": "UOAlive",
+  "notes": [
+    "Only verified outcomes are credited. A report status describes its last snapshot, not proof that a process is still running.",
+    "Meditation 100 and Evaluate Intelligence 100 predate this session.",
+    "Training reports and ClassicUO backups referenced here are local files."
+  ],
+  "baseline": {
+    "Magery": 48.7,
+    "Meditation": 100.0,
+    "Evaluate Intelligence": 100.0
+  },
+  "achievements": [
+    {
+      "id": "reagent-supply",
+      "category": "purchase",
+      "title": "Stocked Greater Heal reagents",
+      "details": {
+        "purchased": {
+          "garlic": 165,
+          "ginseng": 165,
+          "mandrake root": 154,
+          "spider's silk": 165
+        },
+        "cost_gold": 1947
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-20261001T205054Z.json"
+      ]
+    },
+    {
+      "id": "hanging-mace",
+      "category": "quest",
+      "title": "Completed the Hanging Mace new-player quest",
+      "details": {
+        "reward": "Six-piece horned leather LRC suit",
+        "pieces": 6,
+        "lrc_per_piece_percent": 17,
+        "total_lrc_percent": 102,
+        "effective_lrc_percent": 100,
+        "armor": 40,
+        "young_status_preserved": true
+      },
+      "evidence": [
+        "/home/rod/anacrom/HANDOFF-SOL-6.1.md"
+      ]
+    },
+    {
+      "id": "britain-citizenship",
+      "category": "character",
+      "title": "Became a Britain citizen with Commended loyalty",
+      "details": {
+        "city": "Britain",
+        "loyalty": "Commended",
+        "quest_food": {
+          "raw_fish": 25,
+          "cost_gold": 75
+        }
+      },
+      "evidence": [
+        "/home/rod/anacrom/HANDOFF-SOL-6.1.md"
+      ]
+    },
+    {
+      "id": "energy-bolt",
+      "category": "spell",
+      "title": "Learned Energy Bolt for stronger hunts and training",
+      "details": {
+        "macro_id": 42,
+        "scrolls_purchased": 10,
+        "scrolls_added_to_book": 1,
+        "scrolls_remaining": 9,
+        "cost_gold": 350,
+        "spellbook_spell_count": 14
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-paused-20261001.json",
+        "/home/rod/anacrom/HANDOFF-SOL-6.1.md"
+      ]
+    },
+    {
+      "id": "self-bolt-pilot",
+      "category": "training_validation",
+      "title": "Verified Energy Bolt followed by self-healing",
+      "details": {
+        "minimum_hp_in_guarded_session": 87,
+        "final_hp": 108,
+        "reagents_consumed": 0,
+        "target": "Jevensen only"
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/energy-bolt-pilot-20261001.json",
+        "/home/rod/.anacrom/training-reports/magery-self-20261001T230232Z.json"
+      ]
+    },
+    {
+      "id": "black-pearls",
+      "category": "purchase",
+      "title": "Reached the requested 100 black pearls",
+      "details": {
+        "purchased": 49,
+        "price_each_gold": 5,
+        "cost_gold": 245,
+        "backpack_total": 100
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-paused-20261001.json",
+        "/tmp/anacrom-reagent-travel.json"
+      ]
+    },
+    {
+      "id": "mage-wand",
+      "category": "equipment",
+      "title": "Acquired and verified a training wand",
+      "details": {
+        "serial": 1073991717,
+        "cost_gold": 216,
+        "mage_weapon_penalty": 22,
+        "spell_channeling": true,
+        "strength_required": 5,
+        "greater_heal_charges": 108,
+        "base_skill_unchanged_by_equipping": true
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/mage-wand-pilot-20261001.json",
+        "/home/rod/anacrom/HANDOFF-SOL-6.1.md"
+      ]
+    },
+    {
+      "id": "banking",
+      "category": "travel",
+      "title": "Verified the Vesper bank and withdrew cash",
+      "details": {
+        "banker": "Fawne",
+        "balance_before_withdrawal": 1439,
+        "withdrawal_gold": 500,
+        "bank_balance_after": 939
+      },
+      "evidence": [
+        "/home/rod/anacrom/HANDOFF-SOL-6.1.md",
+        "/home/rod/anacrom/locations.json"
+      ]
+    },
+    {
+      "id": "client-version",
+      "category": "client",
+      "title": "Updated the advertised client version and cleared the warning",
+      "details": {
+        "before": "7.0.95.0",
+        "after": "7.0.114.2",
+        "integration_tests_passed": 10,
+        "verified_live_reconnect": true,
+        "game_art_files_updated": false
+      },
+      "evidence": [
+        "/home/rod/anacrom/anacrom/net/login.py",
+        "/home/rod/anacrom/HANDOFF-SOL-6.1.md"
+      ]
+    },
+    {
+      "id": "inventory-readability",
+      "category": "client",
+      "title": "Configured larger inventory display and reagent counters",
+      "details": {
+        "container_scale_percent": 150,
+        "scale_items": true,
+        "counter_bar_enabled": true,
+        "counter_cells": 9,
+        "validation": "JSON/XML parsed; visual check awaits ClassicUO login",
+        "backup": "/home/rod/.anacrom/backups/classicuo-readability-20261001T231417Z/"
+      },
+      "evidence": [
+        "/home/rod/anacrom/HANDOFF-SOL-6.1.md"
+      ]
+    },
+    {
+      "id": "locations",
+      "category": "navigation",
+      "title": "Saved verified destinations and purpose lookups",
+      "details": {
+        "count": 21,
+        "purpose_count": 18,
+        "client_places_mirrored": true
+      },
+      "evidence": [
+        "/home/rod/anacrom/locations.json"
+      ]
+    },
+    {
+      "id": "branch-push",
+      "category": "repository",
+      "title": "Committed and pushed the version, locations and handoff",
+      "details": {
+        "commit": "cab994ac959c4f4727aba756d8a526927cf2ec81",
+        "branch": "feat/terminal-uo-client",
+        "remote": "origin",
+        "newer_achievement_log_included_in_that_commit": false
+      },
+      "evidence": [
+        "https://github.com/decomoraes/anacrom/commit/cab994ac959c4f4727aba756d8a526927cf2ec81"
+      ]
+    },
+    {
+      "id": "training:magery-20261001T205054Z.json",
+      "category": "skill_gain",
+      "title": "Magery 48.7 to 55.0",
+      "details": {
+        "report": "/home/rod/.anacrom/training-reports/magery-20261001T205054Z.json",
+        "before": 48.7,
+        "after": 55.0,
+        "gain": 6.3,
+        "status": "finished",
+        "seconds": 542.2,
+        "attempts": 118,
+        "greater_heal_attempts": null,
+        "energy_bolt_attempts": null,
+        "fizzles": 33,
+        "damage_casts": null,
+        "hp": [
+          108,
+          108
+        ],
+        "minimum_hp": null,
+        "reagent_consumption": null
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-20261001T205054Z.json"
+      ]
+    },
+    {
+      "id": "training:magery-lrc-gh-20261001T224030Z.json",
+      "category": "skill_gain",
+      "title": "Magery 56.0 to 60.0",
+      "details": {
+        "report": "/home/rod/.anacrom/training-reports/magery-lrc-gh-20261001T224030Z.json",
+        "before": 56.0,
+        "after": 60.0,
+        "gain": 4.0,
+        "status": "target reached",
+        "seconds": 423.9,
+        "attempts": 84,
+        "greater_heal_attempts": null,
+        "energy_bolt_attempts": null,
+        "fizzles": 11,
+        "damage_casts": null,
+        "hp": [
+          108,
+          108
+        ],
+        "minimum_hp": null,
+        "reagent_consumption": null
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-lrc-gh-20261001T224030Z.json"
+      ]
+    },
+    {
+      "id": "training:magery-lrc-pilot-20261001T222056Z.json",
+      "category": "skill_gain",
+      "title": "Magery 55.0 to 56.0",
+      "details": {
+        "report": "/home/rod/.anacrom/training-reports/magery-lrc-pilot-20261001T222056Z.json",
+        "before": 55.0,
+        "after": 56.0,
+        "gain": 1.0,
+        "status": "finished",
+        "seconds": 120.5,
+        "attempts": 24,
+        "greater_heal_attempts": null,
+        "energy_bolt_attempts": null,
+        "fizzles": 2,
+        "damage_casts": null,
+        "hp": [
+          108,
+          108
+        ],
+        "minimum_hp": null,
+        "reagent_consumption": null
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-lrc-pilot-20261001T222056Z.json"
+      ]
+    },
+    {
+      "id": "training:magery-self-20261001T230232Z.json",
+      "category": "skill_gain",
+      "title": "Magery 60.0 to 61.3",
+      "details": {
+        "report": "/home/rod/.anacrom/training-reports/magery-self-20261001T230232Z.json",
+        "before": 60.0,
+        "after": 61.3,
+        "gain": 1.3,
+        "status": "time limit",
+        "seconds": 184.0,
+        "attempts": 36,
+        "greater_heal_attempts": null,
+        "energy_bolt_attempts": null,
+        "fizzles": 28,
+        "damage_casts": 8,
+        "hp": [
+          108,
+          108
+        ],
+        "minimum_hp": 87,
+        "reagent_consumption": {
+          "mandrake root": 0,
+          "garlic": 0,
+          "ginseng": 0,
+          "black pearl": 0,
+          "sulfurous ash": 0,
+          "nightshade": 0,
+          "spider's silk": 0
+        }
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-self-20261001T230232Z.json"
+      ]
+    },
+    {
+      "id": "training:magery-wand-20261001T234607Z.json",
+      "category": "skill_gain",
+      "title": "Magery 61.3 to 62.8",
+      "details": {
+        "report": "/home/rod/.anacrom/training-reports/magery-wand-20261001T234607Z.json",
+        "before": 61.3,
+        "after": 62.8,
+        "gain": 1.5,
+        "status": "time limit",
+        "seconds": 121.6,
+        "attempts": null,
+        "greater_heal_attempts": 30,
+        "energy_bolt_attempts": 0,
+        "fizzles": 14,
+        "damage_casts": 0,
+        "hp": [
+          108,
+          108
+        ],
+        "minimum_hp": 108,
+        "reagent_consumption": {
+          "mandrake root": 0,
+          "garlic": 0,
+          "ginseng": 0,
+          "black pearl": 0,
+          "sulfurous ash": 0,
+          "nightshade": 0,
+          "spider's silk": 0
+        }
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261001T234607Z.json"
+      ]
+    },
+    {
+      "id": "training:magery-wand-20261001T234843Z.json",
+      "category": "skill_gain",
+      "title": "Magery 62.8 to 76.1",
+      "details": {
+        "report": "/home/rod/.anacrom/training-reports/magery-wand-20261001T234843Z.json",
+        "before": 62.8,
+        "after": 76.1,
+        "gain": 13.3,
+        "status": "time limit",
+        "seconds": 1801.3,
+        "attempts": null,
+        "greater_heal_attempts": 396,
+        "energy_bolt_attempts": 0,
+        "fizzles": 142,
+        "damage_casts": 0,
+        "hp": [
+          108,
+          108
+        ],
+        "minimum_hp": 108,
+        "reagent_consumption": {
+          "mandrake root": 0,
+          "garlic": 0,
+          "ginseng": 0,
+          "black pearl": 0,
+          "sulfurous ash": 0,
+          "nightshade": 0,
+          "spider's silk": 0
+        }
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261001T234843Z.json"
+      ]
+    },
+    {
+      "id": "magery-milestone:50",
+      "category": "skill_milestone",
+      "title": "Reached base Magery 50",
+      "details": {
+        "skill": "Magery",
+        "base_milestone": 50
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-20261001T205054Z.json"
+      ]
+    },
+    {
+      "id": "magery-milestone:55",
+      "category": "skill_milestone",
+      "title": "Reached base Magery 55",
+      "details": {
+        "skill": "Magery",
+        "base_milestone": 55
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-20261001T205054Z.json"
+      ]
+    },
+    {
+      "id": "magery-milestone:60",
+      "category": "skill_milestone",
+      "title": "Reached base Magery 60",
+      "details": {
+        "skill": "Magery",
+        "base_milestone": 60
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-lrc-gh-20261001T224030Z.json"
+      ]
+    },
+    {
+      "id": "magery-milestone:65",
+      "category": "skill_milestone",
+      "title": "Reached base Magery 65",
+      "details": {
+        "skill": "Magery",
+        "base_milestone": 65
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261001T234843Z.json"
+      ]
+    },
+    {
+      "id": "magery-milestone:70",
+      "category": "skill_milestone",
+      "title": "Reached base Magery 70",
+      "details": {
+        "skill": "Magery",
+        "base_milestone": 70
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261001T234843Z.json"
+      ]
+    },
+    {
+      "id": "magery-milestone:75",
+      "category": "skill_milestone",
+      "title": "Reached base Magery 75",
+      "details": {
+        "skill": "Magery",
+        "base_milestone": 75
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261001T234843Z.json"
+      ]
+    },
+    {
+      "id": "training:magery-wand-20261002T001914Z.json",
+      "category": "skill_gain",
+      "title": "Magery 76.1 to 77.0",
+      "details": {
+        "report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T001914Z.json",
+        "before": 76.1,
+        "after": 77.0,
+        "gain": 0.9,
+        "status": "time limit",
+        "seconds": 181.0,
+        "attempts": null,
+        "greater_heal_attempts": 34,
+        "energy_bolt_attempts": 0,
+        "fizzles": 7,
+        "damage_casts": 0,
+        "hp": [
+          108,
+          108
+        ],
+        "minimum_hp": 108,
+        "reagent_consumption": {
+          "mandrake root": 0,
+          "garlic": 0,
+          "ginseng": 0,
+          "black pearl": 0,
+          "sulfurous ash": 0,
+          "nightshade": 0,
+          "spider's silk": 0
+        }
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261002T001914Z.json"
+      ]
+    },
+    {
+      "id": "training:magery-wand-20261002T002223Z.json",
+      "category": "skill_gain",
+      "title": "Magery 77.0 to 85.6",
+      "details": {
+        "report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T002223Z.json",
+        "before": 77.0,
+        "after": 85.6,
+        "gain": 8.6,
+        "status": "time limit",
+        "seconds": 1800.2,
+        "attempts": null,
+        "greater_heal_attempts": 86,
+        "energy_bolt_attempts": 293,
+        "fizzles": 239,
+        "damage_casts": 62,
+        "hp": [
+          108,
+          108
+        ],
+        "minimum_hp": 87,
+        "reagent_consumption": {
+          "mandrake root": 0,
+          "garlic": 0,
+          "ginseng": 0,
+          "black pearl": 0,
+          "sulfurous ash": 0,
+          "nightshade": 0,
+          "spider's silk": 0
+        }
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261002T002223Z.json"
+      ]
+    },
+    {
+      "id": "wand-self-bolt-validation",
+      "category": "training_validation",
+      "title": "Verified Energy Bolt and healing with the training wand",
+      "details": {
+        "wand": 1073991717,
+        "damage_casts": 65,
+        "minimum_hp": 87,
+        "latest_hp": [
+          108,
+          108
+        ],
+        "reagent_consumption": {
+          "mandrake root": 0,
+          "garlic": 0,
+          "ginseng": 0,
+          "black pearl": 0,
+          "sulfurous ash": 0,
+          "nightshade": 0,
+          "spider's silk": 0
+        }
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261002T022335Z.json"
+      ]
+    },
+    {
+      "id": "magery-milestone:80",
+      "category": "skill_milestone",
+      "title": "Reached base Magery 80",
+      "details": {
+        "skill": "Magery",
+        "base_milestone": 80
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261002T002223Z.json"
+      ]
+    },
+    {
+      "id": "magery-milestone:85",
+      "category": "skill_milestone",
+      "title": "Reached base Magery 85",
+      "details": {
+        "skill": "Magery",
+        "base_milestone": 85
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261002T002223Z.json"
+      ]
+    },
+    {
+      "id": "training:magery-wand-20261002T005235Z.json",
+      "category": "skill_gain",
+      "title": "Magery 85.6 to 91.6",
+      "details": {
+        "report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T005235Z.json",
+        "before": 85.6,
+        "after": 91.6,
+        "gain": 6.0,
+        "status": "time limit",
+        "seconds": 1805.9,
+        "attempts": null,
+        "greater_heal_attempts": 96,
+        "energy_bolt_attempts": 220,
+        "fizzles": 124,
+        "damage_casts": 96,
+        "hp": [
+          108,
+          108
+        ],
+        "minimum_hp": 87,
+        "reagent_consumption": {
+          "mandrake root": 0,
+          "garlic": 0,
+          "ginseng": 0,
+          "black pearl": 0,
+          "sulfurous ash": 0,
+          "nightshade": 0,
+          "spider's silk": 0
+        }
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261002T005235Z.json"
+      ]
+    },
+    {
+      "id": "magery-milestone:90",
+      "category": "skill_milestone",
+      "title": "Reached base Magery 90",
+      "details": {
+        "skill": "Magery",
+        "base_milestone": 90
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261002T005235Z.json"
+      ]
+    },
+    {
+      "id": "training:magery-wand-20261002T012251Z.json",
+      "category": "skill_gain",
+      "title": "Magery 91.6 to 95.4",
+      "details": {
+        "report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T012251Z.json",
+        "before": 91.6,
+        "after": 95.4,
+        "gain": 3.8,
+        "status": "time limit",
+        "seconds": 1809.4,
+        "attempts": null,
+        "greater_heal_attempts": 103,
+        "energy_bolt_attempts": 189,
+        "fizzles": 86,
+        "damage_casts": 103,
+        "hp": [
+          108,
+          108
+        ],
+        "minimum_hp": 87,
+        "reagent_consumption": {
+          "mandrake root": 0,
+          "garlic": 0,
+          "ginseng": 0,
+          "black pearl": 0,
+          "sulfurous ash": 0,
+          "nightshade": 0,
+          "spider's silk": 0
+        }
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261002T012251Z.json"
+      ]
+    },
+    {
+      "id": "magery-milestone:95",
+      "category": "skill_milestone",
+      "title": "Reached base Magery 95",
+      "details": {
+        "skill": "Magery",
+        "base_milestone": 95
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261002T012251Z.json"
+      ]
+    },
+    {
+      "id": "training:magery-wand-20261002T015314Z.json",
+      "category": "skill_gain",
+      "title": "Magery 95.4 to 98.2",
+      "details": {
+        "report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T015314Z.json",
+        "before": 95.4,
+        "after": 98.2,
+        "gain": 2.8,
+        "status": "time limit",
+        "seconds": 1802.2,
+        "attempts": null,
+        "greater_heal_attempts": 107,
+        "energy_bolt_attempts": 165,
+        "fizzles": 58,
+        "damage_casts": 107,
+        "hp": [
+          108,
+          108
+        ],
+        "minimum_hp": 87,
+        "reagent_consumption": {
+          "mandrake root": 0,
+          "garlic": 0,
+          "ginseng": 0,
+          "black pearl": 0,
+          "sulfurous ash": 0,
+          "nightshade": 0,
+          "spider's silk": 0
+        }
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261002T015314Z.json"
+      ]
+    },
+    {
+      "id": "training:magery-wand-20261002T022335Z.json",
+      "category": "skill_gain",
+      "title": "Magery 98.2 to 100.0",
+      "details": {
+        "report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T022335Z.json",
+        "before": 98.2,
+        "after": 100.0,
+        "gain": 1.8,
+        "status": "target reached",
+        "seconds": 1114.9,
+        "attempts": null,
+        "greater_heal_attempts": 65,
+        "energy_bolt_attempts": 112,
+        "fizzles": 47,
+        "damage_casts": 65,
+        "hp": [
+          108,
+          108
+        ],
+        "minimum_hp": 87,
+        "reagent_consumption": {
+          "mandrake root": 0,
+          "garlic": 0,
+          "ginseng": 0,
+          "black pearl": 0,
+          "sulfurous ash": 0,
+          "nightshade": 0,
+          "spider's silk": 0
+        }
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261002T022335Z.json"
+      ]
+    },
+    {
+      "id": "magery-milestone:100",
+      "category": "skill_milestone",
+      "title": "Reached base Magery 100",
+      "details": {
+        "skill": "Magery",
+        "base_milestone": 100
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-wand-20261002T022335Z.json"
+      ]
+    },
+    {
+      "id": "magery-goal-complete",
+      "category": "goal",
+      "title": "Verified base and effective Magery 100.0",
+      "details": {
+        "magery": {
+          "value": 100.0,
+          "base": 100.0,
+          "cap": 100.0,
+          "lock": "up"
+        },
+        "hp": [
+          108,
+          108
+        ],
+        "black_pearls": 100,
+        "training_wand_in_pack": true,
+        "spellbook_equipped": true,
+        "account_released": true
+      },
+      "evidence": [
+        "/home/rod/.anacrom/training-reports/magery-complete-20261001.json"
+      ]
+    }
+  ],
+  "progress": {
+    "skill": "Magery",
+    "target_base": 100.0,
+    "highest_verified_base": 100.0,
+    "gain_from_session_start": 51.3,
+    "goal_completion_verified": true,
+    "last_report_status": "target reached",
+    "last_report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T022335Z.json",
+    "last_hp": [
+      108,
+      108
+    ],
+    "black_pearls": 100
+  },
+  "training_sessions": [
+    {
+      "report": "/home/rod/.anacrom/training-reports/magery-20261001T205054Z.json",
+      "before": 48.7,
+      "after": 55.0,
+      "gain": 6.3,
+      "status": "finished",
+      "seconds": 542.2,
+      "attempts": 118,
+      "greater_heal_attempts": null,
+      "energy_bolt_attempts": null,
+      "fizzles": 33,
+      "damage_casts": null,
+      "hp": [
+        108,
+        108
+      ],
+      "minimum_hp": null,
+      "reagent_consumption": null
+    },
+    {
+      "report": "/home/rod/.anacrom/training-reports/magery-lrc-gh-20261001T224030Z.json",
+      "before": 56.0,
+      "after": 60.0,
+      "gain": 4.0,
+      "status": "target reached",
+      "seconds": 423.9,
+      "attempts": 84,
+      "greater_heal_attempts": null,
+      "energy_bolt_attempts": null,
+      "fizzles": 11,
+      "damage_casts": null,
+      "hp": [
+        108,
+        108
+      ],
+      "minimum_hp": null,
+      "reagent_consumption": null
+    },
+    {
+      "report": "/home/rod/.anacrom/training-reports/magery-lrc-pilot-20261001T222056Z.json",
+      "before": 55.0,
+      "after": 56.0,
+      "gain": 1.0,
+      "status": "finished",
+      "seconds": 120.5,
+      "attempts": 24,
+      "greater_heal_attempts": null,
+      "energy_bolt_attempts": null,
+      "fizzles": 2,
+      "damage_casts": null,
+      "hp": [
+        108,
+        108
+      ],
+      "minimum_hp": null,
+      "reagent_consumption": null
+    },
+    {
+      "report": "/home/rod/.anacrom/training-reports/magery-self-20261001T230232Z.json",
+      "before": 60.0,
+      "after": 61.3,
+      "gain": 1.3,
+      "status": "time limit",
+      "seconds": 184.0,
+      "attempts": 36,
+      "greater_heal_attempts": null,
+      "energy_bolt_attempts": null,
+      "fizzles": 28,
+      "damage_casts": 8,
+      "hp": [
+        108,
+        108
+      ],
+      "minimum_hp": 87,
+      "reagent_consumption": {
+        "mandrake root": 0,
+        "garlic": 0,
+        "ginseng": 0,
+        "black pearl": 0,
+        "sulfurous ash": 0,
+        "nightshade": 0,
+        "spider's silk": 0
+      }
+    },
+    {
+      "report": "/home/rod/.anacrom/training-reports/magery-wand-20261001T234607Z.json",
+      "before": 61.3,
+      "after": 62.8,
+      "gain": 1.5,
+      "status": "time limit",
+      "seconds": 121.6,
+      "attempts": null,
+      "greater_heal_attempts": 30,
+      "energy_bolt_attempts": 0,
+      "fizzles": 14,
+      "damage_casts": 0,
+      "hp": [
+        108,
+        108
+      ],
+      "minimum_hp": 108,
+      "reagent_consumption": {
+        "mandrake root": 0,
+        "garlic": 0,
+        "ginseng": 0,
+        "black pearl": 0,
+        "sulfurous ash": 0,
+        "nightshade": 0,
+        "spider's silk": 0
+      }
+    },
+    {
+      "report": "/home/rod/.anacrom/training-reports/magery-wand-20261001T234843Z.json",
+      "before": 62.8,
+      "after": 76.1,
+      "gain": 13.3,
+      "status": "time limit",
+      "seconds": 1801.3,
+      "attempts": null,
+      "greater_heal_attempts": 396,
+      "energy_bolt_attempts": 0,
+      "fizzles": 142,
+      "damage_casts": 0,
+      "hp": [
+        108,
+        108
+      ],
+      "minimum_hp": 108,
+      "reagent_consumption": {
+        "mandrake root": 0,
+        "garlic": 0,
+        "ginseng": 0,
+        "black pearl": 0,
+        "sulfurous ash": 0,
+        "nightshade": 0,
+        "spider's silk": 0
+      }
+    },
+    {
+      "report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T001914Z.json",
+      "before": 76.1,
+      "after": 77.0,
+      "gain": 0.9,
+      "status": "time limit",
+      "seconds": 181.0,
+      "attempts": null,
+      "greater_heal_attempts": 34,
+      "energy_bolt_attempts": 0,
+      "fizzles": 7,
+      "damage_casts": 0,
+      "hp": [
+        108,
+        108
+      ],
+      "minimum_hp": 108,
+      "reagent_consumption": {
+        "mandrake root": 0,
+        "garlic": 0,
+        "ginseng": 0,
+        "black pearl": 0,
+        "sulfurous ash": 0,
+        "nightshade": 0,
+        "spider's silk": 0
+      }
+    },
+    {
+      "report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T002223Z.json",
+      "before": 77.0,
+      "after": 85.6,
+      "gain": 8.6,
+      "status": "time limit",
+      "seconds": 1800.2,
+      "attempts": null,
+      "greater_heal_attempts": 86,
+      "energy_bolt_attempts": 293,
+      "fizzles": 239,
+      "damage_casts": 62,
+      "hp": [
+        108,
+        108
+      ],
+      "minimum_hp": 87,
+      "reagent_consumption": {
+        "mandrake root": 0,
+        "garlic": 0,
+        "ginseng": 0,
+        "black pearl": 0,
+        "sulfurous ash": 0,
+        "nightshade": 0,
+        "spider's silk": 0
+      }
+    },
+    {
+      "report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T005235Z.json",
+      "before": 85.6,
+      "after": 91.6,
+      "gain": 6.0,
+      "status": "time limit",
+      "seconds": 1805.9,
+      "attempts": null,
+      "greater_heal_attempts": 96,
+      "energy_bolt_attempts": 220,
+      "fizzles": 124,
+      "damage_casts": 96,
+      "hp": [
+        108,
+        108
+      ],
+      "minimum_hp": 87,
+      "reagent_consumption": {
+        "mandrake root": 0,
+        "garlic": 0,
+        "ginseng": 0,
+        "black pearl": 0,
+        "sulfurous ash": 0,
+        "nightshade": 0,
+        "spider's silk": 0
+      }
+    },
+    {
+      "report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T012251Z.json",
+      "before": 91.6,
+      "after": 95.4,
+      "gain": 3.8,
+      "status": "time limit",
+      "seconds": 1809.4,
+      "attempts": null,
+      "greater_heal_attempts": 103,
+      "energy_bolt_attempts": 189,
+      "fizzles": 86,
+      "damage_casts": 103,
+      "hp": [
+        108,
+        108
+      ],
+      "minimum_hp": 87,
+      "reagent_consumption": {
+        "mandrake root": 0,
+        "garlic": 0,
+        "ginseng": 0,
+        "black pearl": 0,
+        "sulfurous ash": 0,
+        "nightshade": 0,
+        "spider's silk": 0
+      }
+    },
+    {
+      "report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T015314Z.json",
+      "before": 95.4,
+      "after": 98.2,
+      "gain": 2.8,
+      "status": "time limit",
+      "seconds": 1802.2,
+      "attempts": null,
+      "greater_heal_attempts": 107,
+      "energy_bolt_attempts": 165,
+      "fizzles": 58,
+      "damage_casts": 107,
+      "hp": [
+        108,
+        108
+      ],
+      "minimum_hp": 87,
+      "reagent_consumption": {
+        "mandrake root": 0,
+        "garlic": 0,
+        "ginseng": 0,
+        "black pearl": 0,
+        "sulfurous ash": 0,
+        "nightshade": 0,
+        "spider's silk": 0
+      }
+    },
+    {
+      "report": "/home/rod/.anacrom/training-reports/magery-wand-20261002T022335Z.json",
+      "before": 98.2,
+      "after": 100.0,
+      "gain": 1.8,
+      "status": "target reached",
+      "seconds": 1114.9,
+      "attempts": null,
+      "greater_heal_attempts": 65,
+      "energy_bolt_attempts": 112,
+      "fizzles": 47,
+      "damage_casts": 65,
+      "hp": [
+        108,
+        108
+      ],
+      "minimum_hp": 87,
+      "reagent_consumption": {
+        "mandrake root": 0,
+        "garlic": 0,
+        "ginseng": 0,
+        "black pearl": 0,
+        "sulfurous ash": 0,
+        "nightshade": 0,
+        "spider's silk": 0
+      }
+    }
+  ],
+  "updated_utc": "2026-10-02T02:44:11.687203+00:00"
+}
